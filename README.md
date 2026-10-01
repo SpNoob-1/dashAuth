@@ -1,93 +1,245 @@
-# reposteria_rafa
+# Documento Técnico de Especificación y Exportación de Backlog
 
+Este documento reúne la consolidación de tickets de trabajo con la información técnica pertinente de arquitectura, esquema de base de datos, reglas del motor de estados e inmutabilidad, para su implementación por parte del equipo de ingeniería.
 
-
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## I. Ficha Técnica y Descripción de Arquitectura
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.guatemaladigital.net/RZepeda/reposteria_rafa.git
-git branch -M main
-git push -uf origin main
+                     ┌─────────────────────────────────────────┐
+                     │     Base de Datos Relacional Core       │
+                     │  (Ubicaciones, Usuarios, Categorías,    │
+                     │   Productos/Landing, Pedidos/Detalle,   │
+                     │   Estados Finales e Inmutables)         │
+                     └────────────────────┬────────────────────┘
+                                          │
+                     ┌────────────────────┴────────────────────┐
+                     │      Servicio Core Transversal          │
+                     │   (JWT Auth Bearer / Hash / Mailer /    │
+                     │    Validaciones del Motor de Estados)   │
+                     └────────────────────┬────────────────────┘
+                                          │
+           ┌──────────────────────────────┴──────────────────────────────┐
+           ▼                                                             ▼
+┌─────────────────────────────────────┐               ┌─────────────────────────────────────┐
+│             Sistema 1:              │               │             Sistema 2:              │
+│ E-Commerce / Landing / Compra       │               │ ERP / Panel de Administración       │
+└─────────────────────────────────────┘               └─────────────────────────────────────┘
+
 ```
 
-## Integrate with your tools
+### 1. Stack Tecnológico General
 
-- [ ] [Set up project integrations](https://gitlab.guatemaladigital.net/RZepeda/reposteria_rafa/-/settings/integrations)
+- **Base de Datos:** PostgreSQL / MySQL (Relacional con restricciones de integridad referencial).
+- **Backend:** Node.js (Express / NestJS) o C# (.NET Core API) / Python (FastAPI).
+- **Frontend E-Commerce & ERP:** Next.js / React con TypeScript.
+- **Seguridad:** Autenticación por Tokens JWT (Bearer Token) y Middleware de RBAC (`CLIENTE` vs `ADMIN`).
 
-## Collaborate with your team
+## II. Definición del Motor de Estados e Inmutabilidad
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+```
+                  ┌─────────────────┐
+                  │    PENDIENTE    │ (Transitorio)
+                  └────────┬────────┘
+                           │
+                           ▼
+                  ┌─────────────────┐
+                  │ EN_PREPARACION  │ (Transitorio)
+                  └────────┬────────┘
+                           │
+                           ▼
+                  ┌─────────────────┐
+                  │      LISTO      │ (Transitorio) -> Dispara Email "Pedido Listo"
+                  └────────┬────────┘
+                           │
+         ┌─────────────────┴─────────────────┐
+         ▼                                   ▼
+┌─────────────────┐                 ┌─────────────────┐
+│    ENTREGADO    │ (Final)         │    CANCELADO    │ (Final)
+└─────────────────┘                 └─────────────────┘
 
-## Test and Deploy
+```
 
-Use the built-in continuous integration in GitLab.
+- **Estados Transitorios (`PENDIENTE`, `EN_PREPARACION`, `LISTO`):** Permiten avanzar de estado en la secuencia definida.
+- **Estados Finales (`ENTREGADO`, `CANCELADO`):** Son inmutables. El Backend debe denegar cualquier petición HTTP `PATCH` o `PUT` sobre pedidos en estos estados con error `400 Bad Request`.
+- **Automatizaciones Integradas:** Al pasar de `EN_PREPARACION` a `LISTO`, el backend invoca el servicio transaccional para notificar vía e-mail al cliente que su pedido está preparado.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## III. Catálogo Granulado de Tickets de Trabajo
 
-***
+### Epic 1: Módulos Core Transversales
 
-# Editing this README
+#### Ticket `CORE-01`: Arquitectura y Esquema DDL de Base de Datos Relacional
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+- **Tipo:** Task / Database
+- **Estimación:** 5 Story Points
+- **Descripción:** Implementar el script DDL para las 11 tablas del sistema relacional (`departamentos`, `municipios`, `usuarios`, `direcciones`, `categorias`, `productos`, `landing_secciones`, `estados_pedido`, `pedidos`, `detalle_pedidos`, `exclusiones_detalle`).
+- **Criterios de Aceptación:**
+  1. Configuración de claves foráneas con `ON DELETE RESTRICT` para evitar el borrado accidental de productos o categorías asociadas a pedidos.
+  2. Implementación de snapshot de la dirección de entrega en la tabla `pedidos`.
+  3. Creación e inserción de datos semilla (*seeders*) para los 5 estados base (`PENDIENTE`, `EN_PREPARACION`, `LISTO`, `ENTREGADO`, `CANCELADO`) especificando cuáles son finales mediante un booleano `es_final`.
 
-## Suggestions for a good README
+#### Ticket `CORE-02`: Módulo de Autenticación, JWT y RBAC
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+- **Tipo:** Task / Backend
+- **Estimación:** 5 Story Points
+- **Descripción:** Desarrollar el servicio centralizado de autenticación con hashing seguro de contraseñas (`bcrypt`/`argon2`) e inclusión de la matriz de roles (`CLIENTE`, `ADMIN`).
+- **Criterios de Aceptación:**
+  1. Endpoint `POST /api/v1/auth/register` (creación de cuenta con rol `CLIENTE`).
+  2. Endpoint `POST /api/v1/auth/login` con retorno de JWT Bearer Token.
+  3. Middleware de autenticación de token y guardias de ruta para la restricción por rol `ADMIN`.
 
-## Name
-Choose a self-explaining name for your project.
+#### Ticket `CORE-03`: Servicio Transaccional de Correos Electrónicos
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+- **Tipo:** Task / Backend
+- **Estimación:** 3 Story Points
+- **Descripción:** Integrar el servicio de envío de correos (Nodemailer, Resend, SendGrid) desacoplado mediante eventos/módulos.
+- **Criterios de Aceptación:**
+  1. Generación de plantillas HTML responsivas para: Bienvenida, Confirmación de Pedido y Notificación de "Pedido Listo".
+  2. Integración asíncrona para que la falla del motor de e-mails no bloquee las transacciones de base de datos.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+#### Ticket `CORE-04`: Flujo de Recuperación de Contraseña
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+- **Tipo:** Feature / Backend
+- **Estimación:** 3 Story Points
+- **Descripción:** Implementar el mecanismo seguro para restablecer credenciales de acceso vía correo electrónico.
+- **Criterios de Aceptación:**
+  1. Endpoint `POST /api/v1/auth/forgot-password` que genera un token firmado de uso único con vigencia máxima de 15 minutos.
+  2. Endpoint `POST /api/v1/auth/reset-password` para aplicar la actualización del `password_hash`.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+### Epic 2: Backend API REST
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+#### Ticket `BACK-01`: API Pública de Catálogo y Landing Page
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+- **Tipo:** Feature / Backend
+- **Estimación:** 3 Story Points
+- **Descripción:** Proveer endpoints de lectura pública para la Landing Page y el catálogo general de productos.
+- **Criterios de Aceptación:**
+  1. Endpoint `GET /api/v1/landing` que retorna categorías y productos filtrados por `mostrar_en_landing = true` y ordenados según `orden_landing`.
+  2. Endpoints `GET /api/v1/catalog/categories`, `GET /api/v1/catalog/products` (con soporte para parámetro `?categoria_id=`) y `GET /api/v1/catalog/products/:id`.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+#### Ticket `BACK-02`: API de Libreta de Direcciones del Cliente
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+- **Tipo:** Feature / Backend
+- **Estimación:** 3 Story Points
+- **Descripción:** Servicios para consultar departamentos, municipios y la gestión de direcciones del perfil.
+- **Criterios de Aceptación:**
+  1. Endpoint público `GET /api/v1/addresses/locations` con la jerarquía completa de ubicaciones.
+  2. Endpoints protegidos `GET /api/v1/addresses` y `POST /api/v1/addresses` vinculando la nueva dirección con un alias obligatorio al cliente autenticado.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+#### Ticket `BACK-03`: API de Checkout y Registro de Pedidos
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+- **Tipo:** Feature / Backend
+- **Estimación:** 5 Story Points
+- **Descripción:** Procesamiento transaccional de compras con congelamiento de precios/dirección y registro de exclusiones dinámicas.
+- **Criterios de Aceptación:**
+  1. Endpoint `POST /api/v1/orders` protegido para clientes autenticados.
+  2. Guardado en snapshot de la dirección del cliente y del detalle de ítems (con precios al momento de la compra).
+  3. Registro dinámico de exclusiones de ingredientes en la tabla `exclusiones_detalle`.
+  4. Disparo automático del e-mail de **Confirmación de Pedido**.
+  5. Endpoint `GET /api/v1/orders/my-orders` para consultar el historial del usuario.
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+#### Ticket `BACK-04`: API ERP - CRUD de Productos y Configuración de Landing
 
-## License
-For open source projects, say how it is licensed.
+- **Tipo:** Feature / Backend
+- **Estimación:** 5 Story Points
+- **Descripción:** Módulo de administración de productos y organización visual del catálogo en la Landing Page.
+- **Criterios de Aceptación:**
+  1. Endpoints de creación, actualización e inactivación de productos (`POST`, `PUT` en `/api/v1/admin/products`).
+  2. Endpoint `PATCH /api/v1/admin/landing/products/:id/toggle-landing` para alternar la visibilidad en el inicio.
+  3. Endpoint `PUT /api/v1/admin/landing/products/reorder` con soporte transaccional SQL para reorganizar posiciones (`orden_landing`).
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+#### Ticket `BACK-05`: API ERP - Engine de Estados e Inmutabilidad
+
+- **Tipo:** Feature / Backend
+- **Estimación:** 5 Story Points
+- **Descripción:** Implementar la lógica del motor de estados, validación de secuencia y bloqueo por inmutabilidad.
+- **Criterios de Aceptación:**
+  1. Endpoint `PATCH /api/v1/admin/orders/:id/status` accesible solo para el rol `ADMIN`.
+  2. Verificación previa: Si el pedido se encuentra en `ENTREGADO` o `CANCELADO`, rechazar la actualización respondiendo HTTP `400 Bad Request` ("El pedido está en un estado final e inmutable").
+  3. Validar que la transición siga el flujo estricto (`PENDIENTE` -> `EN_PREPARACION` -> `LISTO` -> `ENTREGADO` / `CANCELADO`).
+  4. Disparar e-mail automático al cliente cuando el estado sea actualizado a `LISTO`.
+
+### Epic 3: Frontend E-Commerce
+
+#### Ticket `FRONT-EC-01`: Layout de Landing Page y Navegación de Catálogo
+
+- **Tipo:** Feature / Frontend
+- **Estimación:** 5 Story Points
+- **Descripción:** Interfaz principal responsiva consumiendo el API de Landing y Catálogo.
+- **Criterios de Aceptación:**
+  1. Mapeo dinámico de secciones y tarjetas de producto (ingredientes y días de entrega).
+  2. Filtro interactivo por categorías sin recarga completa de la página.
+
+#### Ticket `FRONT-EC-02`: Carrito de Compras con Especificación de Exclusiones
+
+- **Tipo:** Feature / Frontend
+- **Estimación:** 5 Story Points
+- **Descripción:** Manejo del estado global del carrito con entrada libre para especificaciones del cliente.
+- **Criterios de Aceptación:**
+  1. Persistencia local del estado del carrito (LocalStorage).
+  2. Campo de texto/chips por cada ítem en el carrito para especificar exclusiones (*Sin gluten*, *Sin lactosa*, etc.).
+
+#### Ticket `FRONT-EC-03`: Módulo de Autenticación de Cliente
+
+- **Tipo:** Feature / Frontend
+- **Estimación:** 3 Story Points
+- **Descripción:** Vistas y formularios para inicio de sesión, registro y restablecimiento de contraseña.
+- **Criterios de Aceptación:**
+  1. Validaciones en tiempo de ejecución de formato e-mail y seguridad de contraseñas.
+  2. Almacenamiento seguro del JWT en el cliente e inyección en el header `Authorization: Bearer <token>`.
+
+#### Ticket `FRONT-EC-04`: Checkout de Compra y Selección de Ubicación
+
+- **Tipo:** Feature / Frontend
+- **Estimación:** 5 Story Points
+- **Descripción:** Formulario final de procesamiento de orden con integración de libreta de direcciones.
+- **Criterios de Aceptación:**
+  1. Selector para elegir una dirección guardada o ingresar una nueva mediante selectores en cascada (Departamento -> Municipio).
+  2. Envío del payload estructurado hacia `POST /api/v1/orders` y redirección a la pantalla de confirmación exitosa.
+
+### Epic 4: Frontend ERP (Panel de Administración)
+
+#### Ticket `FRONT-ERP-01`: Layout Administrativo y Control de Acceso
+
+- **Tipo:** Feature / Frontend
+- **Estimación:** 3 Story Points
+- **Descripción:** Estructura base del panel ERP con protección de rutas.
+- **Criterios de Aceptación:**
+  1. Formulario de ingreso para administradores.
+  2. Guardias de navegación en el cliente para bloquear accesos no autorizados si el token no tiene rol `ADMIN`.
+
+#### Ticket `FRONT-ERP-02`: Panel de Administración de Productos y Landing
+
+- **Tipo:** Feature / Frontend
+- **Estimación:** 5 Story Points
+- **Descripción:** Formulario CRUD de catálogo y controles drag-and-drop / selectores para reordenar la landing page.
+- **Criterios de Aceptación:**
+  1. Creación/Edición de productos con validaciones de precios y días de preparación.
+  2. Interfaz para cambiar estado de `mostrar_en_landing` y guardar el nuevo orden visual de la tienda.
+
+#### Ticket `FRONT-ERP-03`: Panel de Monitoreo de Pedidos e Inmutabilidad Visual
+
+- **Tipo:** Feature / Frontend
+- **Estimación:** 5 Story Points
+- **Descripción:** Vista tipo Kanban/Tabla de seguimiento de pedidos con código de colores por estado y bloqueo de acciones.
+- **Criterios de Aceptación:**
+  1. Visualización clara de los badges de estado (Transitorios: Azul/Amarillo; Finales: Verde/Rojo).
+  2. Desglose del detalle de pedido destacando de manera visual las exclusiones del cliente (ej. *"Sin Gluten"*).
+  3. Deshabilitar controles de cambio de estado en pedidos con estado `ENTREGADO` o `CANCELADO`, mostrando un mensaje/tooltip: *"Este pedido se encuentra en un estado final e inmutable"*.
+  4. Mostrar notificación visual de envío de e-mail cuando un pedido se cambie al estado `LISTO`.
+
+## IV. Matriz de Planificación por Sprints
+
+```
+Sprint 1: CORE-01, CORE-02, CORE-03, CORE-04, FRONT-EC-03, FRONT-ERP-01 (22 pts)
+Sprint 2: BACK-01, BACK-04, FRONT-EC-01, FRONT-EC-02, FRONT-ERP-02      (23 pts)
+Sprint 3: BACK-02, BACK-03, BACK-05, FRONT-EC-04, FRONT-ERP-03           (23 pts)
+
+```
+
+| **Sprint**                                    | **Backend / Base de Datos**                | **Frontend E-Commerce**      | **Frontend ERP** | **Puntos Totales** |
+| --------------------------------------------- | ------------------------------------------ | ---------------------------- | ---------------- | ------------------ |
+| **Sprint 1: Core, Auth & Base de Datos**      | `CORE-01`, `CORE-02`, `CORE-03`, `CORE-04` | `FRONT-EC-03`                | `FRONT-ERP-01`   | **22 pts**         |
+| **Sprint 2: Catálogo & Carrito**              | `BACK-01`, `BACK-04`                       | `FRONT-EC-01`, `FRONT-EC-02` | `FRONT-ERP-02`   | **23 pts**         |
+| **Sprint 3: Checkout & Motor de Estados ERP** | `BACK-02`, `BACK-03`, `BACK-05`            | `FRONT-EC-04`                | `FRONT-ERP-03`   | **23 pts**         |
+
+##
