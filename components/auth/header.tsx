@@ -13,7 +13,7 @@ interface HeaderProps {
 
 export const Header = ({ label }: HeaderProps) => {
     return (
-        <div className="w-full flex flex-col gap-y-2 items-centerjustify-center ">
+        <div className="w-full flex flex-col gap-y-2  items-centerjustify-center ">
             <h1 className={cn("text-3xl font-semibold flex", font.className)}>
                 <Lock size={40} /> Auth
             </h1>

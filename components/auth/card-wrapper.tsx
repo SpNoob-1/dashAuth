@@ -18,7 +18,7 @@ export const CardWrapper = ({ children, headerLabel, backButtonLabel, backButton
         // contenedor principal
         <Card className="w-full max-w-md shadow-md justify-center items-center ">
             {/* encabezado */}
-            <CardHeader className="justify-center items-center ">
+            <CardHeader className="justify-center items-center w-full ">
                 <Header label={headerLabel} />
             </CardHeader>
             {/* body formulario "children"*/}

@@ -11,11 +11,16 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginSchema, LoginSchemaType } from "@/schemas";
+import { LoginSchema, type LoginSchemaType } from "@/schemas";
 import { Formerrors } from "@/components/forn-erros";
 import { FormSuccess } from "@/components/form-succes";
+import { useState } from "react";
 
 export const Loginform = () => {
+
+    const [serverError, setServerError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [isPending, setIsPending] = useState(false);
 
     const form = useForm<LoginSchemaType>({
         resolver: zodResolver(LoginSchema),
@@ -25,15 +30,41 @@ export const Loginform = () => {
         }
     });
 
-    const onSubmit = (data: LoginSchemaType) => {
-        console.log(data);
-    }
+    const onSubmit = async (values: LoginSchemaType) => {
+        setServerError(null);
+        setSuccessMessage(null);
+        setIsPending(true);
+
+        try {
+            const response = await fetch("/api/v1/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(values),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setServerError(data.error || "Ocurrió un error en la autenticación");
+                return;
+            }
+
+            setSuccessMessage(data.message);
+            console.log("Respuesta de la API:", data);
+        } catch (err) {
+            setServerError("Error de conexión con el servidor");
+        } finally {
+            setIsPending(false);
+        }
+    };
 
     return (
         <CardWrapper
             headerLabel="Inicio de sesión"
             backButtonLabel="¿No tienes una cuenta?"
-            backButtonHref="/auth/register"
+            backButtonHref="/register"
             showSocial
         >
             <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)} >
@@ -83,11 +114,11 @@ export const Loginform = () => {
                             </Field>
                         )}
                     />
-                    <Formerrors message={""} />
-                    <FormSuccess message={""} />
+                    {serverError && <Formerrors message={serverError} />}
+                    {successMessage && <FormSuccess message={successMessage} />}
                     <Field>
-                        <Button type="submit" variant={"login"} className="w-full">
-                            Login
+                        <Button type="submit" className="w-full" disabled={isPending}>
+                            {isPending ? "Validando..." : "Iniciar Sesión"}
                         </Button>
                     </Field>
                 </FieldGroup>
