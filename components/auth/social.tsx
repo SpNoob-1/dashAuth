@@ -7,7 +7,7 @@ import { Button } from "../ui/button";
 
 export const Social = () => {
     return (
-        <div className="flex gap-4 w-full justify-center items-center mr-27 ml-27 ">
+        <div className="flex gap-4 w-full justify-center items-center  ">
             <Button
                 variant="outline"
                 size='lg'

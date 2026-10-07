@@ -15,18 +15,23 @@ interface CardWrapperProps {
 
 export const CardWrapper = ({ children, headerLabel, backButtonLabel, backButtonHref, showSocial }: CardWrapperProps) => {
     return (
-        <Card className="w-full max-w-md shadow-md ">
-            <CardHeader>
+        // contenedor principal
+        <Card className="w-full max-w-md shadow-md justify-center items-center ">
+            {/* encabezado */}
+            <CardHeader className="justify-center items-center ">
                 <Header label={headerLabel} />
             </CardHeader>
-            <CardContent className="w-100">
+            {/* body formulario "children"*/}
+            <CardContent className="w-100 ">
                 {children}
             </CardContent>
+            {/* social login github google */}
             {showSocial && (
-                <CardFooter >
+                <CardFooter className="w-52" >
                     <Social />
                 </CardFooter>
             )}
+            {/* footer backbutton "no tienes una cuenta? " */}
             <CardFooter className="flex justify-center">
                 <BackButton
                     href={backButtonHref}

@@ -13,9 +13,10 @@ export const BackButton = ({ href, label }: BackButtonProps) => {
         <Button
             variant="link"
             size="sm"
-            asChild
+            render={<Link href={href} />}
+            nativeButton={false}
         >
-            <Link href={href}>{label}</Link>
+            {label}
         </Button>
-    )
-}
+    );
+};
