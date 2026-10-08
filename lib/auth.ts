@@ -1,9 +1,12 @@
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
+import { cookies } from "next/headers";
 
-const JWT_SECRET = new TextEncoder().encode(
-    process.env.JWT_SECRET || "fallback_secret_key_change_in_production"
-);
+if (!process.env.JWT_SECRET) {
+    throw new Error("Falta la variable de entorno JWT_SECRET");
+}
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
+
 
 export interface JWTPayload {
     sub: string; // ID del usuario
@@ -45,4 +48,14 @@ export async function verifyToken(token: string): Promise<JWTPayload | null> {
     } catch (error) {
         return null;
     }
+}
+
+
+export async function getCurrentUser(): Promise<JWTPayload | null> {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+
+    if (!token) return null;
+
+    return await verifyToken(token);
 }
