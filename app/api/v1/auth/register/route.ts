@@ -1,6 +1,10 @@
 // app/api/v1/auth/register/route.ts
 import { NextResponse } from "next/server";
+import { db } from "@/index";
+import { users } from "@/db/schema"
+import { hashPassword } from "@/lib/auth";
 import { RegisterSchema } from "@/schemas";
+import { getUserByEmail } from "@/data/users";
 
 export async function POST(req: Request) {
     try {
@@ -10,8 +14,8 @@ export async function POST(req: Request) {
         if (!validation.success) {
             return NextResponse.json(
                 {
-                    error: "Datos de formulario inválidos",
-                    details: validation.error.flatten().fieldErrors,
+                    error: "Datos de registro inválidos",
+                    details: validation.error.flatten((issue) => issue.message).fieldErrors,
                 },
                 { status: 400 }
             );
@@ -19,17 +23,40 @@ export async function POST(req: Request) {
 
         const { name, email, password } = validation.data;
 
-        // 2. Respuesta temporal de prueba para confirmar recepción
+        // Verificar si el usuario ya existe
+        const existingUser = await getUserByEmail(email);
+
+        if (existingUser) {
+            return NextResponse.json(
+                { error: "El correo electrónico ya está registrado" },
+                { status: 409 }
+            );
+        }
+
+        // Hash de la contraseña e inserción con rol CLIENTE
+        const hashedPassword = await hashPassword(password);
+        const [newUser] = await db
+            .insert(users)
+            .values({
+                name,
+                email,
+                password: hashedPassword,
+                rol: "CLIENTE",
+            })
+            .returning({
+                id: users.id,
+                name: users.name,
+                email: users.email,
+                rol: users.rol
+            });
+
         return NextResponse.json(
-            {
-                message: "Datos recibidos y validados correctamente",
-                data: { name, email, passwordLength: password.length },
-            },
-            { status: 200 }
+            { message: "Usuario registrado con éxito", user: newUser },
+            { status: 201 }
         );
     } catch (error) {
         return NextResponse.json(
-            { error: "Error al procesar la solicitud" },
+            { error: "Error interno del servidor al registrar" },
             { status: 500 }
         );
     }
