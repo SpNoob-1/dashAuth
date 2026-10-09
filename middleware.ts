@@ -1,24 +1,30 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyToken } from "@/lib/auth";
-
-// 1. DEFINICIÓN DE RUTAS Y PERMISOS
-// Rutas que requieren estar autenticado (cualquier rol: CLIENTE o ADMIN)
-const PROTECTED_ROUTES = ["/dashboard", "/profile", "/orders", "/configuracion"];
-
-// Rutas exclusivas para administradores
-const ADMIN_ROUTES = ["/admin", "/api/v1/admin",];
-
-// Rutas solo para usuarios NO autenticados (invitados)
-const AUTH_ROUTES = ["/login", "/register"];
-
-// Rutas API que requieren autenticación
-const PROTECTED_API_ROUTES = ["/api/v1/user", "/api/v1/checkout",];
+import {
+    PUBLIC_ROUTES,
+    PROTECTED_ROUTES,
+    ADMIN_ROUTES,
+    AUTH_ROUTES,
+    PROTECTED_API_ROUTES,
+    API_AUTH_PREFIX,
+} from "@/routes";
 
 export async function middleware(req: NextRequest) {
     const { pathname } = req.nextUrl;
 
-    // Extraer token de Cookie o Header Authorization
+    // 0. Permitir siempre endpoints API de autenticación (/api/v1/auth/*)
+    if (pathname.startsWith(API_AUTH_PREFIX)) {
+        return NextResponse.next();
+    }
+
+    // 1. VERIFICAR SI ES UNA RUTA PÚBLICA
+    // Soporta rutas dinámicas automáticamente (ej. /tienda/producto-123)
+    const isPublicRoute = PUBLIC_ROUTES.some(
+        (route) => pathname === route || pathname.startsWith(`${route}/`)
+    );
+
+    // Extraer token de Cookies o Header Authorization
     const cookieToken = req.cookies.get("auth_token")?.value;
     const authHeader = req.headers.get("Authorization");
     const bearerToken = authHeader?.startsWith("Bearer ")
@@ -64,28 +70,21 @@ export async function middleware(req: NextRequest) {
     // C. RUTAS SOLO PARA INVITADOS (/login, /register)
     const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route));
     if (isAuthRoute && payload) {
-        // Si ya inició sesión, redirigir según su rol
         const redirectUrl = payload.rol === "ADMIN" ? "/admin" : "/dashboard";
         return NextResponse.redirect(new URL(redirectUrl, req.url));
     }
 
-    // D. RUTAS PÚBLICAS (/, /products, /about, etc.)
-    // Pasan libremente sin ser interceptadas por las validaciones anteriores.
+    // D. PERMITIR ACCESO A RUTAS PÚBLICAS O CUALQUIER OTRA RUTA NO CONTROLADA
+    if (isPublicRoute) {
+        return NextResponse.next();
+    }
+
     return NextResponse.next();
 }
 
 // 2. CONFIGURACIÓN DEL MATCHER
 export const config = {
     matcher: [
-        /*
-          Coincide con todas las rutas excepto:
-          - /api/auth/* (tus endpoints públicos de login/register)
-          - Archivos estáticos (_next/static, _next/image, favicon.ico, etc.)
-        */
-        "/configuracion",
-        "/admin/:path*",
-        "/login",
-        "/register",
         "/((?!_next/static|_next/image|favicon.ico|images|api/v1/auth).*)",
     ],
 };

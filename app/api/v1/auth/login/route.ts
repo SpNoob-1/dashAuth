@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { comparePassword, signToken } from "@/lib/auth";
 import { LoginSchema } from "@/schemas";
 import { getUserByEmail } from "@/data/users";
+import { generateVerificationToken } from "@/lib/tokens";
+import { getUserById } from "@/data/users";
 
 export async function POST(req: Request) {
     try {
@@ -20,6 +22,7 @@ export async function POST(req: Request) {
 
         // Buscar usuario en base de datos
         const user = await getUserByEmail(email)
+        // const userById = await getUserById(user.id)
 
         if (!user) {
             return NextResponse.json(
@@ -44,11 +47,25 @@ export async function POST(req: Request) {
             );
         }
 
+
+        // if (!user.emailVerified) {
+        //     // Generas un nuevo token para que el usuario pueda recibir un enlace fresco si el anterior venció
+        //     const verificationToken = await generateVerificationToken(user.email);
+
+        //     // (Aquí enviaremos el correo con Resend más adelante)
+
+        //     return NextResponse.json(
+        //         { error: "Tu cuenta aún no ha sido verificada. Te hemos enviado un nuevo correo de confirmación." },
+        //         { status: 403 }
+        //     );
+        // }
+
         // Emitir Token JWT Bearer
         const token = await signToken({
             sub: user.id.toString(),
             email: user.email,
             rol: user.rol,
+            name: user.name,
         });
 
         const response = NextResponse.json(

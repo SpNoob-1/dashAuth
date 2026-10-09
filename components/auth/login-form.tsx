@@ -15,12 +15,16 @@ import { LoginSchema, type LoginSchemaType } from "@/schemas";
 import { Formerrors } from "@/components/forn-erros";
 import { FormSuccess } from "@/components/form-succes";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export const Loginform = () => {
 
     const [serverError, setServerError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [isPending, setIsPending] = useState(false);
+    const router = useRouter();
+
+
 
     const form = useForm<LoginSchemaType>({
         resolver: zodResolver(LoginSchema),
@@ -43,6 +47,12 @@ export const Loginform = () => {
                 },
                 body: JSON.stringify(values),
             });
+            // Si la respuesta es exitosa, redirigir al usuario a la página de configuración y refrescar la página.
+
+            if (response.ok) {
+                router.push("/configuracion");
+                router.refresh();
+            }
 
             const data = await response.json();
 

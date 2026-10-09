@@ -12,6 +12,7 @@ export interface JWTPayload {
     sub: string; // ID del usuario
     email: string;
     rol: "CLIENTE" | "ADMIN";
+    name?: string;
 }
 
 // 1. Hashing de Contraseñas
@@ -28,7 +29,7 @@ export async function comparePassword(
 
 // 2. Generación de Token JWT
 export async function signToken(payload: JWTPayload): Promise<string> {
-    return new SignJWT({ email: payload.email, rol: payload.rol })
+    return new SignJWT({ email: payload.email, rol: payload.rol, name: payload.name })
         .setProtectedHeader({ alg: "HS256" })
         .setSubject(payload.sub)
         .setIssuedAt()
@@ -44,6 +45,7 @@ export async function verifyToken(token: string): Promise<JWTPayload | null> {
             sub: payload.sub as string,
             email: payload.email as string,
             rol: payload.rol as "CLIENTE" | "ADMIN",
+            name: payload.name as string,
         };
     } catch (error) {
         return null;

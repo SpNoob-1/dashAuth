@@ -5,6 +5,7 @@ import { users } from "@/db/schema"
 import { hashPassword } from "@/lib/auth";
 import { RegisterSchema } from "@/schemas";
 import { getUserByEmail } from "@/data/users";
+import { generateVerificationToken } from "@/lib/tokens";
 
 export async function POST(req: Request) {
     try {
@@ -50,8 +51,17 @@ export async function POST(req: Request) {
                 rol: users.rol
             });
 
+        const verificationToken = await generateVerificationToken(newUser.email);
+
+
+
         return NextResponse.json(
-            { message: "Usuario registrado con éxito", user: newUser },
+            {
+                message: "Usuario registrado con éxito",
+                user: newUser,
+                token: verificationToken.token,
+                expiresIn: verificationToken.expires,
+            },
             { status: 201 }
         );
     } catch (error) {
