@@ -16,6 +16,7 @@ import { Formerrors } from "@/components/forn-erros";
 import { FormSuccess } from "@/components/form-succes";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export const Loginform = () => {
 
@@ -126,6 +127,24 @@ export const Loginform = () => {
                     />
                     {serverError && <Formerrors message={serverError} />}
                     {successMessage && <FormSuccess message={successMessage} />}
+
+                    {!serverError && !successMessage && (
+                        <>
+                            <Button
+                                type="button"
+                                variant="link"
+                                className="px-0 w-full justify-end"
+                            >
+                                <Link
+                                    href="/forgot-password"
+                                >
+                                    Olvidaste tu contraseña?
+                                </Link>
+                            </Button>
+                        </>
+                    )}
+
+
                     <Field>
                         <Button type="submit" className="w-full" disabled={isPending}>
                             {isPending ? "Validando..." : "Iniciar Sesión"}

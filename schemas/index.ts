@@ -1,5 +1,18 @@
 import * as z from "zod";
 
+export const forgotPasswordSchema = z.object({
+    email: z
+        .string({
+            message: "El correo electrónico es requerido",
+        })
+        .min(1, { message: "El correo electrónico no puede estar vacío" })
+        .email({ message: "Ingresa un correo electrónico válido" })
+        .toLowerCase()
+        .trim(),
+});
+
+
+
 export const LoginSchema = z.object({
     email: z
         .string({
@@ -56,3 +69,5 @@ export const RegisterSchema = z.object({
 
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
 export type RegisterSchemaType = z.infer<typeof RegisterSchema>;
+export type ForgotPasswordSchemaType = z.infer<typeof forgotPasswordSchema>;
+// export type ResetPasswordSchemaType = z.infer<typeof ResetPasswordSchema>;

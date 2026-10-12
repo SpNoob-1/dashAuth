@@ -7,6 +7,7 @@
  */
 export const PUBLIC_ROUTES: string[] = [
     "/",           // Home
+    "/verification",
     "/about",      // Acerca de
     "/contacto",   // Formulario de contacto
     "/tienda",     // Catálogo de productos

@@ -4,7 +4,7 @@ import { comparePassword, signToken } from "@/lib/auth";
 import { LoginSchema } from "@/schemas";
 import { getUserByEmail } from "@/data/users";
 import { generateVerificationToken } from "@/lib/tokens";
-import { getUserById } from "@/data/users";
+import { sendVerificationEmail } from "@/lib/mail";
 
 export async function POST(req: Request) {
     try {
@@ -21,8 +21,7 @@ export async function POST(req: Request) {
         const { email, password } = validation.data;
 
         // Buscar usuario en base de datos
-        const user = await getUserByEmail(email)
-        // const userById = await getUserById(user.id)
+        const user = await getUserByEmail(email);
 
         if (!user) {
             return NextResponse.json(
@@ -40,25 +39,32 @@ export async function POST(req: Request) {
             );
         }
 
+        // 1. VALIDAR SI EL CORREO ESTÁ VERIFICADO (Antes de chequear roles)
+        if (!user.emailVerified) {
+            // Generamos un nuevo token de verificación (esto borra el anterior si existía)
+            const verificationToken = await generateVerificationToken(user.email);
+
+            // Enviamos el nuevo correo con Resend
+            await sendVerificationEmail(
+                verificationToken.email,
+                verificationToken.token
+            );
+
+            return NextResponse.json(
+                {
+                    error: "Tu cuenta no está verificada. Te hemos enviado un nuevo enlace de confirmación a tu correo."
+                },
+                { status: 403 }
+            );
+        }
+
+        // 2. Validar que el usuario tenga un rol válido
         if (!user.rol) {
             return NextResponse.json(
                 { error: "El usuario no tiene un rol válido asignado" },
                 { status: 400 }
             );
         }
-
-
-        // if (!user.emailVerified) {
-        //     // Generas un nuevo token para que el usuario pueda recibir un enlace fresco si el anterior venció
-        //     const verificationToken = await generateVerificationToken(user.email);
-
-        //     // (Aquí enviaremos el correo con Resend más adelante)
-
-        //     return NextResponse.json(
-        //         { error: "Tu cuenta aún no ha sido verificada. Te hemos enviado un nuevo correo de confirmación." },
-        //         { status: 403 }
-        //     );
-        // }
 
         // Emitir Token JWT Bearer
         const token = await signToken({
@@ -71,13 +77,13 @@ export async function POST(req: Request) {
         const response = NextResponse.json(
             {
                 message: "Inicio de sesión exitoso",
-                token, // Retorno como Bearer token
+                token,
                 user: { id: user.id, email: user.email, role: user.rol },
             },
             { status: 200 }
         );
 
-        // Guardar también en cookie HTTP-Only para facilidades del Middleware en servidor
+        // Guardar también en cookie HTTP-Only para el Middleware
         response.cookies.set("auth_token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",

@@ -23,13 +23,30 @@ export const users = pgTable('users', {
 export const verificationToken = pgTable("verification_token", {
     id: text("id")
         .primaryKey()
-        .$defaultFn(() => crypto.randomUUID()), // Genera un ID único para la fila
+        .$defaultFn(() => crypto
+            .randomUUID()),
     email: text("email").notNull(),
-    token: text("token").notNull().unique(), // Token único (UUID) que irá en la URL
-    expires: timestamp("expires", { mode: "date" }).notNull(), // Fecha y hora de vencimiento
+    token: text("token").notNull().unique(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
 },
     (table) => [
         // Garantiza que la combinación de email y token sea única
         primaryKey({ columns: [table.id, table.token] }),
     ]
+);
+
+export const passwordResetTokens = pgTable("password_reset_token", {
+    id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto
+            .randomUUID()),
+    email: text("email").notNull(),
+    token: text("token").notNull().unique(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+},
+    (table) => [
+        // Garantiza que la combinación de email y token sea única
+        primaryKey({ columns: [table.id, table.token] }),
+    ]
+
 );
