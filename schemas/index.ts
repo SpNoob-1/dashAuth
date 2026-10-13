@@ -1,5 +1,25 @@
 import * as z from "zod";
 
+export const NewPasswordSchema = z.object({
+    password: z
+        .string({
+            message: "La contraseña es requerida",
+        })
+        .min(6, { message: "La contraseña debe tener al menos 6 caracteres" })
+        .max(72, { message: "La contraseña sobrepasa el límite permitido" }),
+
+    confirmPassword: z
+        .string({
+            message: "La confirmación de la contraseña es requerida",
+        })
+        .min(1, { message: "La confirmación de la contraseña no puede estar vacía" }),
+
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Las contraseñas no coinciden",
+    path: ["confirmPassword"],
+});
+
+
 export const forgotPasswordSchema = z.object({
     email: z
         .string({
@@ -70,4 +90,4 @@ export const RegisterSchema = z.object({
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
 export type RegisterSchemaType = z.infer<typeof RegisterSchema>;
 export type ForgotPasswordSchemaType = z.infer<typeof forgotPasswordSchema>;
-// export type ResetPasswordSchemaType = z.infer<typeof ResetPasswordSchema>;
+export type NewPasswordSchemaType = z.infer<typeof NewPasswordSchema>;

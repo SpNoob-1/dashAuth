@@ -5,14 +5,20 @@ import { cookies } from "next/headers";
 if (!process.env.JWT_SECRET) {
     throw new Error("Falta la variable de entorno JWT_SECRET");
 }
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
+// Validación de entropía y longitud mínima (≥ 32 bytes)
+const secretBytes = new TextEncoder().encode(process.env.JWT_SECRET);
+if (secretBytes.length < 32) {
+    throw new Error("El JWT_SECRET es demasiado corto. Debe tener al menos 32 bytes (puedes generar uno con 'openssl rand -hex 32').");
+}
+const JWT_SECRET = secretBytes;
 
 export interface JWTPayload {
-    sub: string; // ID del usuario
+    sub: string;
     email: string;
     rol: "CLIENTE" | "ADMIN";
     name?: string;
+    emailVerified?: boolean;
 }
 
 // 1. Hashing de Contraseñas
@@ -29,11 +35,16 @@ export async function comparePassword(
 
 // 2. Generación de Token JWT
 export async function signToken(payload: JWTPayload): Promise<string> {
-    return new SignJWT({ email: payload.email, rol: payload.rol, name: payload.name })
+    return new SignJWT({
+        email: payload.email,
+        rol: payload.rol,
+        name: payload.name,
+        emailVerified: payload.emailVerified,
+    })
         .setProtectedHeader({ alg: "HS256" })
         .setSubject(payload.sub)
         .setIssuedAt()
-        .setExpirationTime("8h") // Expira en 8 horas
+        .setExpirationTime("2h")
         .sign(JWT_SECRET);
 }
 
@@ -46,12 +57,12 @@ export async function verifyToken(token: string): Promise<JWTPayload | null> {
             email: payload.email as string,
             rol: payload.rol as "CLIENTE" | "ADMIN",
             name: payload.name as string,
+            emailVerified: payload.emailVerified as boolean,
         };
     } catch (error) {
         return null;
     }
 }
-
 
 export async function getCurrentUser(): Promise<JWTPayload | null> {
     const cookieStore = await cookies();

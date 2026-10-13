@@ -82,17 +82,16 @@ export async function POST(req: Request) {
             },
             { status: 200 }
         );
-
-        // Guardar también en cookie HTTP-Only para el Middleware
         response.cookies.set("auth_token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: 60 * 60 * 8, // 8 horas
+            sameSite: "strict",
             path: "/",
+            maxAge: 60 * 60 * 8,
         });
 
         return response;
+
     } catch (error) {
         return NextResponse.json(
             { error: "Error interno en la autenticación" },

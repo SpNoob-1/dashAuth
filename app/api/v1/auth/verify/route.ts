@@ -26,11 +26,8 @@ export async function GET(req: Request) {
         }
         const { email, expires } = existingToken;
 
-        if (new Date(expires) < new Date()) {
-            return NextResponse.json(
-                { error: "Token de verificación expirado" },
-                { status: 410 }
-            );
+        if (new Date(existingToken.expires).getTime() < Date.now()) {
+            return NextResponse.json({ error: "Token de verificación expirado" }, { status: 410 });
         }
 
         const existingUser = await getUserByEmail(email);
@@ -43,14 +40,15 @@ export async function GET(req: Request) {
         }
         const { id } = existingUser;
 
-        await db
-            .update(users)
-            .set({ emailVerified: new Date(), email: existingToken.email })
-            .where(eq(users.id, id));
-
-        await db
-            .delete(verificationToken)
-            .where(eq(verificationToken.id, existingToken.id));
+        await db.transaction(async (tx) => {
+            await tx
+                .update(users)
+                .set({ emailVerified: new Date() })
+                .where(eq(users.id, id));
+            await tx
+                .delete(verificationToken)
+                .where(eq(verificationToken.id, existingToken.id));
+        });
 
         return NextResponse.json(
             { message: "Correo electrónico verificado exitosamente" },

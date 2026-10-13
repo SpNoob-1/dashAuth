@@ -7,11 +7,12 @@
  */
 export const PUBLIC_ROUTES: string[] = [
     "/",           // Home
-    "/verification",
+    "/auth/verification",
     "/about",      // Acerca de
     "/contacto",   // Formulario de contacto
     "/tienda",     // Catálogo de productos
     "/terminos",   // Términos y condiciones
+
 ];
 
 // Rutas que requieren estar autenticado (cualquier rol: CLIENTE o ADMIN)
@@ -31,8 +32,10 @@ export const ADMIN_ROUTES = [
 
 // Rutas solo para usuarios NO autenticados (invitados)
 export const AUTH_ROUTES = [
-    "/login",
-    "/register",
+    "/auth/login",
+    "/auth/register",
+    "/auth/forgot-password",
+    "/auth/new-password",
 ];
 
 // Rutas API que requieren autenticación

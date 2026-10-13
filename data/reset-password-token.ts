@@ -1,7 +1,6 @@
 import { db } from "@/index";
 import { passwordResetTokens } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { generateRandomToken } from "@/lib/tokens";
 
 export async function getResetPasswordTokenByToken(token: string) {
     try {
@@ -31,14 +30,3 @@ export async function getResetPasswordTokenByEmail(email: string) {
     }
 }
 
-// export async function deleteResetPasswordToken(id: number) {
-//     try {
-//         await db
-//             .delete(passwordResetTokens)
-//             .where(eq(passwordResetTokens.id, id));
-
-//         return true;
-//     } catch {
-//         return false;
-//     }
-// }

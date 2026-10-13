@@ -13,8 +13,8 @@ import { eq } from "drizzle-orm";
 export async function generatePasswordResetToken(email: string) {
     const token = crypto.randomUUID();
 
-    // El token expira en 1 hora (3600 segundos * 1000 ms)
-    const expires = new Date(new Date().getTime() + 3600 * 1000);
+    // El token expira en 15 minutos
+    const expires = new Date(Date.now() + 15 * 60 * 1000);
 
     // 1. Verificar si ya existía un token previo para este correo
     const existingToken = await getResetPasswordTokenByEmail(email);

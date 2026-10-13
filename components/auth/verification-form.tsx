@@ -50,7 +50,7 @@ function VerificationForm() {
     return (
         <CardWrapper
             headerLabel="Verifica tu correo electrónico"
-            backButtonHref="/login"
+            backButtonHref="/auth/login"
             backButtonLabel="Regresar al inicio"
         >
             <div className="flex flex-col items-center w-full justify-center gap-y-4">

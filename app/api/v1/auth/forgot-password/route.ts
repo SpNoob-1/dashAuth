@@ -19,13 +19,15 @@ export async function POST(req: Request) {
         const existingUser = await getUserByEmail(email);
 
         if (!existingUser) {
+            // No revelamos si el email existe.
             return NextResponse.json(
-                { error: "El correo electrónico no está registrado" },
-                { status: 404 }
+                { message: "Si el correo está registrado recibirás instrucciones" },
+                { status: 200 }
             );
         }
 
         const passwordResetToken = await generatePasswordResetToken(email);
+
         await sendResetPasswordEmail(
             passwordResetToken.email,
             passwordResetToken.token
@@ -33,7 +35,7 @@ export async function POST(req: Request) {
 
 
         return NextResponse.json(
-            { message: "Correo enviado exitosamentes" },
+            { message: "Correo enviado exitosamentes. Revisa tu bandeja de entrada" },
             { status: 200 }
         );
     } catch (error) {

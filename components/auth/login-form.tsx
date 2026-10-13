@@ -75,7 +75,7 @@ export const Loginform = () => {
         <CardWrapper
             headerLabel="Inicio de sesión"
             backButtonLabel="¿No tienes una cuenta?"
-            backButtonHref="/register"
+            backButtonHref="/auth/register"
             showSocial
         >
             <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)} >
@@ -136,7 +136,7 @@ export const Loginform = () => {
                                 className="px-0 w-full justify-end"
                             >
                                 <Link
-                                    href="/forgot-password"
+                                    href="/auth/forgot-password"
                                 >
                                     Olvidaste tu contraseña?
                                 </Link>

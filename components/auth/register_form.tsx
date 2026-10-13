@@ -66,7 +66,7 @@ export const Registerform = () => {
         <CardWrapper
             headerLabel="Registro de usuario"
             backButtonLabel="¿Ya tienes una cuenta?"
-            backButtonHref="/login"
+            backButtonHref="/auth/login"
             showSocial
         >
             <form id="form-rhf-register" onSubmit={form.handleSubmit(onSubmit)} >

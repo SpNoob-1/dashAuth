@@ -40,7 +40,7 @@ export const ForgotPasswordForm = () => {
         setIsPending(true);
 
         try {
-            const response = await fetch("/api/v1/auth/login", {
+            const response = await fetch("/api/v1/auth/forgot-password", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -48,10 +48,10 @@ export const ForgotPasswordForm = () => {
                 body: JSON.stringify(values),
             });
 
-            if (response.ok) {
-                router.push("/configuracion");
-                router.refresh();
-            }
+            // if (response.ok) {
+            //     router.push("/configuracion");
+            //     router.refresh();
+            // }
 
             const data = await response.json();
 
@@ -73,7 +73,7 @@ export const ForgotPasswordForm = () => {
         <CardWrapper
             headerLabel="Restablecer Contraseña"
             backButtonLabel="Regresar al inicio"
-            backButtonHref="/login"
+            backButtonHref="/auth/login"
             showSocial={false}
         >
             <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)} >
