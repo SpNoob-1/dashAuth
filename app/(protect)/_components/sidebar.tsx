@@ -31,6 +31,11 @@ export const Sidebar = () => {
                 <p>Client Component</p>
             </Link>
 
+            <Link href="/roldemo" className={`flex items-center gap-x-2 rounded-md p-2 cursor-pointer ${pathname === "/roldemo" ? "bg-secondary" : ""}`}>
+                <Package className="w-4 h-4" />
+                <p>Rol Demo</p>
+            </Link>
+
         </nav>
     )
 }

@@ -17,7 +17,6 @@ export const PUBLIC_ROUTES: string[] = [
 // Rutas que requieren estar autenticado (cualquier rol: CLIENTE o ADMIN)
 // Mueves tus arreglos directamente aquí:
 export const PROTECTED_ROUTES = [
-    "/dashboard",
     "/profile",
     "/orders",
     "/configuracion",
@@ -28,6 +27,7 @@ export const PROTECTED_ROUTES = [
 // Rutas exclusivas para administradores
 export const ADMIN_ROUTES = [
     "/admin",
+    "/dashboard",
     "/api/v1/admin",
 ];
 

@@ -70,7 +70,7 @@ export async function middleware(req: NextRequest) {
     // C. RUTAS SOLO PARA INVITADOS (/login, /register)
     const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route));
     if (isAuthRoute && payload) {
-        const redirectUrl = payload.rol === "ADMIN" ? "/admin" : "/dashboard";
+        const redirectUrl = payload.rol === "ADMIN" ? "/admin" : "/configuracion";
         return NextResponse.redirect(new URL(redirectUrl, req.url));
     }
 
