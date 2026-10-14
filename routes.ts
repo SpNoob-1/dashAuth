@@ -12,7 +12,6 @@ export const PUBLIC_ROUTES: string[] = [
     "/contacto",   // Formulario de contacto
     "/tienda",     // Catálogo de productos
     "/terminos",   // Términos y condiciones
-
 ];
 
 // Rutas que requieren estar autenticado (cualquier rol: CLIENTE o ADMIN)
@@ -22,6 +21,8 @@ export const PROTECTED_ROUTES = [
     "/profile",
     "/orders",
     "/configuracion",
+    "/server",
+    "/client"
 ];
 
 // Rutas exclusivas para administradores

@@ -127,23 +127,19 @@ export const Loginform = () => {
                     />
                     {serverError && <Formerrors message={serverError} />}
                     {successMessage && <FormSuccess message={successMessage} />}
-
-                    {!serverError && !successMessage && (
-                        <>
-                            <Button
-                                type="button"
-                                variant="link"
-                                className="px-0 w-full justify-end"
+                    <>
+                        <Button
+                            type="button"
+                            variant="link"
+                            className="px-0 w-full justify-end"
+                        >
+                            <Link
+                                href="/auth/forgot-password"
                             >
-                                <Link
-                                    href="/auth/forgot-password"
-                                >
-                                    Olvidaste tu contraseña?
-                                </Link>
-                            </Button>
-                        </>
-                    )}
-
+                                Olvidaste tu contraseña?
+                            </Link>
+                        </Button>
+                    </>
 
                     <Field>
                         <Button type="submit" className="w-full" disabled={isPending}>
