@@ -1,8 +1,17 @@
-export default function SettingsPage() {
+
+import { getCurrentUser } from "@/lib/auth";
+import { SettingsForm } from "@/components/auth/settings";
+
+
+export default async function SettingsPage() {
+
+    const user = await getCurrentUser();
+
+    if (!user) return null
 
     return (
-        <div className="justify-center items-center h-full">
-            <h1>Configuración page</h1>
+        <div >
+            <SettingsForm user={user} />
         </div>
     );
 }

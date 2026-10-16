@@ -23,7 +23,7 @@ export default async function RolDemoPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="flex w-full mb-2">
-                        <FormSuccess message="Rol Admin" />
+                        <FormSuccess message="Opteniendo datos " />
                     </div>
                     <Getdemo />
                 </CardContent>
@@ -39,7 +39,7 @@ export default async function RolDemoPage() {
             </CardHeader>
             <CardContent>
                 <div className="flex mb-2 w-full">
-                    <Formerrors message="Rol Cliente" />
+                    <Formerrors message="No tienes acceso a este contenido" />
                 </div>
                 <Getdemo />
             </CardContent>

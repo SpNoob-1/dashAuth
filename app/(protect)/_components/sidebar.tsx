@@ -11,7 +11,7 @@ export const Sidebar = () => {
     const pathname = usePathname()
 
     return (
-        <nav className="flex flex-col gap-y-2 w-50 p-2 shadow-sm shadow-gray-500/50 rounded-md">
+        <nav className="flex flex-col gap-y-2 w-50 p-2 shadow-sm shadow-gray-500/50 rounded-md h-full">
             <div className="flex items-center gap-x-2 rounded-md p-2 bg-secondary">
                 <DropdownMenuAvatar />
                 <p className="text-sm font-medium">Perfil</p>
