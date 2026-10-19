@@ -100,7 +100,7 @@ export const Registerform = () => {
                         render={({ field, fieldState }) => (
                             <Field data-invalid={fieldState.invalid}>
                                 <FieldLabel htmlFor="form-rhf-register-email">
-                                    Email
+                                    Correo
                                 </FieldLabel>
                                 <Input
                                     {...field}
@@ -123,7 +123,7 @@ export const Registerform = () => {
                         render={({ field, fieldState }) => (
                             <Field data-invalid={fieldState.invalid}>
                                 <FieldLabel htmlFor="form-rhf-register-password">
-                                    Password
+                                    Contraseña
                                 </FieldLabel>
                                 <Input
                                     {...field}
@@ -146,7 +146,7 @@ export const Registerform = () => {
                         render={({ field, fieldState }) => (
                             <Field data-invalid={fieldState.invalid}>
                                 <FieldLabel htmlFor="form-rhf-register-confirmPassword">
-                                    Confirmar Password
+                                    Confirmar Contraseña
                                 </FieldLabel>
                                 <Input
                                     {...field}

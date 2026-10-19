@@ -19,9 +19,9 @@ export const PUBLIC_ROUTES: string[] = [
 export const PROTECTED_ROUTES = [
     "/profile",
     "/orders",
-    "/configuracion",
     "/server",
-    "/client"
+    "/client",
+    "/configuracion"
 ];
 
 // Rutas exclusivas para administradores

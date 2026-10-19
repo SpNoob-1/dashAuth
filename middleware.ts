@@ -38,7 +38,7 @@ export async function middleware(req: NextRequest) {
     const isAdminRoute = ADMIN_ROUTES.some((route) => pathname.startsWith(route));
     if (isAdminRoute) {
         if (!payload) {
-            return NextResponse.redirect(new URL("/login", req.url));
+            return NextResponse.redirect(new URL("/auth/login", req.url));
         }
         if (payload.rol !== "ADMIN") {
             if (pathname.startsWith("/api/")) {
@@ -63,7 +63,7 @@ export async function middleware(req: NextRequest) {
                     { status: 401 }
                 );
             }
-            return NextResponse.redirect(new URL("/login", req.url));
+            return NextResponse.redirect(new URL("/auth/login", req.url));
         }
     }
 

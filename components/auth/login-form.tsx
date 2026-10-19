@@ -51,7 +51,7 @@ export const Loginform = () => {
             // Si la respuesta es exitosa, redirigir al usuario a la página de configuración y refrescar la página.
 
             if (response.ok) {
-                router.push("/configuracion");
+                router.push("/roldemo");
                 router.refresh();
             }
 
