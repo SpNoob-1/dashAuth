@@ -7,7 +7,7 @@
  */
 export const PUBLIC_ROUTES: string[] = [
     "/",           // Home
-    "/auth/verification",
+    "/api/v1/auth",
     "/about",      // Acerca de
     "/contacto",   // Formulario de contacto
     "/tienda",     // Catálogo de productos
@@ -29,6 +29,7 @@ export const ADMIN_ROUTES = [
     "/admin",
     "/dashboard",
     "/api/v1/admin",
+    "/roldemo"
 ];
 
 // Rutas solo para usuarios NO autenticados (invitados)

@@ -8,6 +8,7 @@ export async function POST(req: Request) {
     try {
         const body = await req.json();
         const validation = forgotPasswordSchema.safeParse(body);
+        const clientOrigin = req.headers.get("X-Client-Origin") || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
         if (!validation.success) {
             return NextResponse.json(
@@ -30,7 +31,8 @@ export async function POST(req: Request) {
 
         await sendResetPasswordEmail(
             passwordResetToken.email,
-            passwordResetToken.token
+            passwordResetToken.token,
+            clientOrigin
         )
 
 

@@ -12,6 +12,7 @@ export async function POST(req: Request) {
     try {
         const body = await req.json();
         const validation = RegisterSchema.safeParse(body);
+        const clientOrigin = req.headers.get("X-Client-Origin") || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
         if (!validation.success) {
             return NextResponse.json(
@@ -58,7 +59,8 @@ export async function POST(req: Request) {
         // Enviar correo de verificación
         await sendVerificationEmail(
             verificationToken.email,
-            verificationToken.token
+            verificationToken.token,
+            clientOrigin
         );
 
         return NextResponse.json(
