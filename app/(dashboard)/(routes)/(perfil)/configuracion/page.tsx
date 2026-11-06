@@ -10,7 +10,7 @@ export default async function SettingsPage() {
     if (!user) return null
 
     return (
-        <div >
+        <div className="p-20">
             <SettingsForm user={user} />
         </div>
     );

@@ -1,6 +1,7 @@
 import * as z from "zod";
 import { roleEnum } from "@/db/schema";
 
+
 export const SettingsSchema = z.object({
     name: z.optional(
         z.string()
@@ -152,16 +153,17 @@ export const productSchema = z.object({
             message: "El nombre no puede contener únicamente espacios en blanco.",
         }),
 
-    images: z
-        .array(
-            z.object({
-                url: z
-                    .string({ message: "La URL de la imagen es requerida." })
-                    .trim()
-                    .url({ message: "Cada imagen debe ser una URL válida." }),
-            })
-        )
-        .min(1, { message: "Debes subir al menos una imagen para el producto." }),
+    // ToDo: quitar cuando se agrege la opcion para las imagenes los formularios para crear y actualizar productos 
+    // images: z
+    //     .array(
+    //         z.object({
+    //             url: z
+    //                 .string({ message: "La URL de la imagen es requerida." })
+    //                 .trim()
+    //                 .url({ message: "Cada imagen debe ser una URL válida." }),
+    //         })
+    //     )
+    //     .min(1, { message: "Debes subir al menos una imagen para el producto." }),
 
     price: z.coerce
         .number({ message: "El precio debe ser un número válido." })
@@ -198,48 +200,10 @@ export const productSchemaReorden = z.object({
     ),
 });
 
-export const productSchemaCreate = z.object({
-    name: z
-        .string({ message: "El nombre es obligatorio." })
-        .trim()
-        .min(1, { message: "El nombre del producto es obligatorio." })
-        .max(100, { message: "El nombre no puede exceder los 100 caracteres." })
-        .refine((val) => val.trim().length > 0, {
-            message: "El nombre no puede contener únicamente espacios en blanco.",
-        }),
-
-    images: z
-        .array(
-            z.object({
-                url: z
-                    .string({ message: "La URL de la imagen es requerida." })
-                    .trim()
-                    .url({ message: "Cada imagen debe ser una URL válida." }),
-            })
-        )
-        .min(1, { message: "Sube al menos una imagen." }),
-
-    price: z
-        .number({ message: "Ingresa un precio numérico válido." })
-        .min(0.01, { message: "El precio debe ser mayor a 0." })
-        .max(999999.99, { message: "El precio no puede exceder $999,999.99." })
-        .refine((val) => Number(val.toFixed(2)) === val, {
-            message: "El precio no puede tener más de 2 decimales.",
-        }),
-
-    categoryId: z
-        .string({ message: "La categoría es obligatoria." })
-        .trim()
-        .min(1, { message: "Selecciona una categoría." }),
-
-    sizeId: z
-        .string({ message: "El tamaño es obligatorio." })
-        .trim()
-        .min(1, { message: "Selecciona una talla o tamaño." }),
-})
+export const productSchemaUpdate = productSchema.partial();
 
 // PRODUCTS
-export type productSchemaCreateRType = z.infer<typeof productSchemaCreate>;
+export type productSchemaUpdateType = z.infer<typeof productSchemaUpdate>;
 export type productSchemaType = z.infer<typeof productSchema>;
 export type productSchemaIsLandingType = z.infer<typeof productSchemaIsLanding>;
 export type productSchemaReordenType = z.infer<typeof productSchemaReorden>;
@@ -250,3 +214,5 @@ export type RegisterSchemaType = z.infer<typeof RegisterSchema>;
 export type ForgotPasswordSchemaType = z.infer<typeof forgotPasswordSchema>;
 export type NewPasswordSchemaType = z.infer<typeof NewPasswordSchema>;
 export type SettingsSchemaType = z.infer<typeof SettingsSchema>;
+
+

@@ -1,7 +1,7 @@
 "use client"
 
 import { usePathname } from "next/navigation"
-import { DropdownMenuAvatar } from "../app/(perfil)/_components/avatar";
+import { DropdownMenuAvatar } from "../app/(dashboard)/(routes)/(perfil)/_components/avatar";
 import { MainBar } from "@/components/mainbar"
 
 

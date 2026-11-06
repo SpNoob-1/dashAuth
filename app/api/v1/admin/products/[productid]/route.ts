@@ -1,10 +1,8 @@
-// api/v1/admin/landing/products/
-
 import { NextResponse } from "next/server";
-import { eq } from "drizzle-orm";
+import { eq } from "drizzle-orm"; // <-- Asegúrate de importar 'eq'
 import { db } from "@/index";
-import { products } from "@/db/schema";
-import { productSchemaIsLanding } from "@/schemas";
+import { products, images } from "@/db/schema";
+import { productSchemaUpdate } from "@/schemas";
 import { getCurrentUser } from "@/lib/auth";
 
 export async function PATCH(
@@ -13,7 +11,7 @@ export async function PATCH(
 ) {
     try {
         const body = await req.json();
-        const validation = productSchemaIsLanding.safeParse(body);
+        const validation = productSchemaUpdate.safeParse(body);
         const user = await getCurrentUser();
 
         if (!user) {
@@ -41,24 +39,33 @@ export async function PATCH(
             return NextResponse.json({ error: "Product ID es requerido" }, { status: 400 });
         }
 
-        const valuesToUpdate: {
-            isFeatured?: boolean;
-            isArchived?: boolean;
-        } = {};
+        const { name, price, categoryId, sizeId, images: productImages } = validation.data;
 
-        if (validation.data.isFeatured !== undefined) {
-            valuesToUpdate.isFeatured = validation.data.isFeatured;
-        }
 
-        if (validation.data.isArchived !== undefined) {
-            valuesToUpdate.isArchived = validation.data.isArchived;
-        }
 
-        if (Object.keys(valuesToUpdate).length > 0) {
-            await db
-                .update(products)
-                .set(valuesToUpdate)
-                .where(eq(products.id, productid));
+        // 1. Actualización del producto principal (¡AGREGADO EL WHERE AQUÍ!)
+        await db
+            .update(products)
+            .set({
+                name,
+                price: price?.toString(),
+                categoryId,
+                sizeId,
+                updatedAt: new Date(),
+            })
+            .where(eq(products.id, productid));
+
+        // 2. Elimina las imágenes antiguas asociadas
+        await db.delete(images).where(eq(images.productId, productid));
+
+        // 3. Inserta la nueva lista de imágenes 
+        if (productImages && productImages.length > 0) {
+            await db.insert(images).values(
+                productImages.map((img) => ({
+                    productId: productid,
+                    url: img.url,
+                }))
+            );
         }
 
         return NextResponse.json(
