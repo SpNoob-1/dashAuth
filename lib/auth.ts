@@ -8,6 +8,7 @@ if (!process.env.JWT_SECRET) {
 
 // Validación de entropía y longitud mínima (≥ 32 bytes)
 const secretBytes = new TextEncoder().encode(process.env.JWT_SECRET);
+
 if (secretBytes.length < 32) {
     throw new Error("El JWT_SECRET es demasiado corto. Debe tener al menos 32 bytes (puedes generar uno con 'openssl rand -hex 32').");
 }

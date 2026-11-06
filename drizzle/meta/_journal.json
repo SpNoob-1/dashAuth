@@ -8,6 +8,20 @@
       "when": 1792445276272,
       "tag": "0000_outgoing_pandemic",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793894425913,
+      "tag": "0001_flowery_vanisher",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793894631648,
+      "tag": "0002_freezing_odin",
+      "breakpoints": true
     }
   ]
 }

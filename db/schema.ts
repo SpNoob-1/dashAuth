@@ -113,6 +113,8 @@ export const billboards = pgTable("billboards", {
 export const categories = pgTable("categories", {
     id: uuid("id").primaryKey().defaultRandom(),
     name: varchar("name", { length: 255 }).notNull(),
+    order: integer("order").notNull().default(10),
+    isFeatured: boolean("is_featured").default(false).notNull(),
     billboardId: uuid("billboard_id")
         .references(() => billboards.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -145,6 +147,7 @@ export const products = pgTable("products", {
     sizeId: uuid("size_id")
         .references(() => sizes.id, { onDelete: "restrict" }),
     price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+    order: integer("order").notNull().default(10),
     isFeatured: boolean("is_featured").default(false).notNull(),
     isArchived: boolean("is_archived").default(false).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })

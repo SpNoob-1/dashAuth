@@ -13,6 +13,8 @@ import {
 // Lista de orígenes permitidos (puedes agregar tus puertos de desarrollo o dominios de producción)
 const ALLOWED_ORIGINS = ["http://localhost:3001", "http://localhost:3002"];
 
+
+// setear los headers si biene de los origenes permitidos 
 function addCorsHeaders(response: NextResponse, origin: string) {
     if (ALLOWED_ORIGINS.includes(origin)) {
         response.headers.set("Access-Control-Allow-Origin", origin);
