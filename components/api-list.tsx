@@ -11,7 +11,7 @@ interface ApiListProps {
 
 export const ApiList = ({ entityName, entityIdName }: ApiListProps) => {
     const origin = useOrigin();
-    const baseUrl = `${origin}/api/v1`;
+    const baseUrl = `${origin}/api/v1/admin`;
 
     return (
         <div>

@@ -5,8 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 export default async function DashboardLayout({
     children,
 }: {
-    children: React.ReactNode;
-    params: Promise<{ storeId: string }>;
+    children: React.ReactNode
 }) {
     const user = await getCurrentUser();
 

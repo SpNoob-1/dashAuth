@@ -11,6 +11,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { ImageUpload } from "@/components/image-upload";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter, useParams } from "next/navigation";
@@ -66,25 +67,20 @@ const ProductForm = ({ initialData, categories, sizes }: ProductFormProps) => {
     const action = initialData ? "Save Changes" : "Create";
 
     const onSubmit = async (data: productSchemaUpdateType) => {
-        console.log("🚀 1. onSubmit ejecutado con los datos:", data);
+
         setIsPending(true);
         try {
             let res;
 
             if (initialData) {
-                console.log("📡 2. Intentando hacer PATCH a:", `/api/v1/admin/products/${params.productid}`);
                 res = await axios.patch(`/api/v1/admin/products/${params.productid}`, data);
             } else {
-                console.log("📡 2. Intentando hacer POST");
                 res = await axios.post(`/api/v1/admin/products`, data);
             }
-
-            console.log("📥 3. Respuesta recibida del servidor:", res.data);
 
             const responseData = res.data;
 
             if (responseData?.error) {
-                console.log("⚠️ 4. El servidor devolvió un error controlado:", responseData.error);
                 toast.error(responseData.error);
                 return;
             }
@@ -94,8 +90,6 @@ const ProductForm = ({ initialData, categories, sizes }: ProductFormProps) => {
             router.refresh();
 
         } catch (err: any) {
-            // 🔍 Imprimimos el error real de Axios (por ejemplo, si el backend devolvió 400 o 500)
-            console.error("❌ 5. Error atrapado en el catch:", err.response?.data || err.message);
             toast.error(err.response?.data?.error || "Ocurrió un error inesperado.");
         } finally {
             setIsPending(false);
@@ -127,6 +121,37 @@ const ProductForm = ({ initialData, categories, sizes }: ProductFormProps) => {
 
             <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-8 w-full">
                 <FieldGroup>
+
+
+                    {/* cloudinary controller */}
+                    <Controller
+                        name="images"
+                        control={form.control}
+                        render={({ field, fieldState }) => (
+                            <Field data-invalid={fieldState.invalid}>
+                                <FieldLabel>Imágenes del Producto</FieldLabel>
+                                <ImageUpload
+                                    value={field.value?.map((image: { url: string }) => image.url) || []}
+                                    disabled={isPending}
+                                    onChange={(url) => {
+                                        // 🟢 Lee el estado MÁS RECIENTE directamente desde el formulario
+                                        const currentImages = form.getValues("images") || [];
+                                        field.onChange([...currentImages, { url }]);
+                                    }}
+                                    onRemove={(url) => {
+                                        const currentImages = form.getValues("images") || [];
+                                        field.onChange(
+                                            currentImages.filter((image: { url: string }) => image.url !== url)
+                                        );
+                                    }}
+                                />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                            </Field>
+                        )}
+                    />
+
+
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
                         {/* Name */}

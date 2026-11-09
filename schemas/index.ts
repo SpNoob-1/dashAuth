@@ -152,18 +152,16 @@ export const productSchema = z.object({
         .refine((val) => val.trim().length > 0, {
             message: "El nombre no puede contener únicamente espacios en blanco.",
         }),
-
-    // ToDo: quitar cuando se agrege la opcion para las imagenes los formularios para crear y actualizar productos 
-    // images: z
-    //     .array(
-    //         z.object({
-    //             url: z
-    //                 .string({ message: "La URL de la imagen es requerida." })
-    //                 .trim()
-    //                 .url({ message: "Cada imagen debe ser una URL válida." }),
-    //         })
-    //     )
-    //     .min(1, { message: "Debes subir al menos una imagen para el producto." }),
+    images: z
+        .array(
+            z.object({
+                url: z
+                    .string({ message: "La URL de la imagen es requerida." })
+                    .trim()
+                    .url({ message: "Cada imagen debe ser una URL válida." }),
+            })
+        )
+        .min(1, { message: "Debes subir al menos una imagen para el producto." }),
 
     price: z.coerce
         .number({ message: "El precio debe ser un número válido." })
@@ -201,6 +199,87 @@ export const productSchemaReorden = z.object({
 });
 
 export const productSchemaUpdate = productSchema.partial();
+
+// CATEGORIES
+
+export const categorySchema = z.object({
+    name: z
+        .string()
+        .trim()
+        .min(1, { message: "El nombre de la categoría es obligatorio." })
+        .max(50, { message: "El nombre no puede exceder los 50 caracteres." })
+        .refine((val) => val.trim().length > 0, {
+            message: "El nombre no puede contener únicamente espacios en blanco.",
+        }),
+
+    billboardId: z
+        .string({ message: "Debes seleccionar un billboard." })
+        .trim()
+        .min(1, { message: "El billboard es requerido." })
+});
+
+export const categorySchemaIsLanding = z.object({
+    isFeatured: z.boolean().default(false).optional(),
+})
+
+export const categoryctSchemaReorden = z.object({
+    items: z.array(
+        z.object({
+            id: z.string().uuid(),
+            order: z.number().int(),
+        })
+    ),
+});
+
+// BILLBOARDS
+
+export const billboardSchema = z.object({
+    label: z
+        .string({ message: "El título/label es obligatorio." })
+        .trim()
+        .min(1, { message: "El título del billboard es obligatorio." })
+        .max(100, { message: "El título no puede exceder los 100 caracteres." })
+        .refine((val) => val.trim().length > 0, {
+            message: "El título no puede contener únicamente espacios en blanco.",
+        }),
+
+    imageUrl: z
+        .string({ message: "La imagen es obligatoria." })
+        .trim()
+        .min(1, { message: "Debes subir una imagen para el billboard." })
+});
+
+// SIZES
+
+export const sizeSchema = z.object({
+    name: z
+        .string()
+        .trim()
+        .min(1, { message: "El nombre del tamaño es obligatorio." })
+        .max(30, { message: "El nombre no puede exceder los 30 caracteres." })
+        .refine((val) => val.trim().length > 0, {
+            message: "El nombre no puede contener únicamente espacios en blanco.",
+        }),
+
+    value: z
+        .string()
+        .trim()
+        .min(1, { message: "El valor o abreviación es requerido (ej. S, M, L, 42)." })
+        .max(10, { message: "El valor no puede tener más de 10 caracteres." })
+        .refine((val) => val.trim().length > 0, {
+            message: "El valor no puede contener únicamente espacios en blanco.",
+        }),
+});
+
+
+// SIZES
+export type sizeSchemaType = z.infer<typeof sizeSchema>;
+
+// BILLBOARDS
+export type billboardSchemaType = z.infer<typeof billboardSchema>;
+
+// CATEGORIES
+export type categoriesSchemaType = z.infer<typeof categorySchema>;
 
 // PRODUCTS
 export type productSchemaUpdateType = z.infer<typeof productSchemaUpdate>;

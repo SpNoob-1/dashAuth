@@ -1,13 +1,12 @@
-"use client"
+"use client";
 
 import { Button } from "@/components/ui/button";
 import { ProductColumns } from "../[productid]/components/colums";
 import { toast } from "sonner";
-import { Copy, Pencil, Trash } from "lucide-react";
-import { useRouter, useParams } from "next/navigation";
-import { ConfirmModal } from "@/components/modals/comfirm-modal";
-import { useState, useTransition } from "react";
-// import { deleteProduct } from "@/app/actions/product-actions";
+import { Copy, Pencil, Star, Archive } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import axios from "axios";
 
 import { MoreHorizontal } from "lucide-react";
 
@@ -18,10 +17,14 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
     DropdownMenuGroup,
-} from "@/components/ui/dropdown-menu"
+    DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 interface CellActionsProps {
-    product: ProductColumns;
+    product: ProductColumns & {
+        isFeatured?: boolean;
+        isArchived?: boolean;
+    };
 }
 
 const onCopy = (id: string) => {
@@ -29,81 +32,80 @@ const onCopy = (id: string) => {
     toast.success("ID Copiado");
 }
 
-
-
 const CellActions = ({ product }: CellActionsProps) => {
-
     const router = useRouter();
-    const params = useParams();
+    const [isLoadingToggle, setIsLoadingToggle] = useState(false);
 
-    const [open, setOpen] = useState(false);
-    const [isPending, startTransition] = useTransition();
+    const handleToggleStatus = async (field: "isFeatured" | "isArchived", currentValue: boolean) => {
+        setIsLoadingToggle(true);
+        try {
+            const newValue = !currentValue;
 
+            const res = await axios.patch(`/api/v1/admin/landing/products/${product.id}`, {
+                [field]: newValue,
+            });
 
-
-    // const onDelete = () => {
-    //     startTransition(async () => {
-    //         try {
-    //             const res = await deleteProduct(product.id, params.storeId as string);
-
-    //             if (res?.error) {
-    //                 toast.error(res.error);
-    //                 return;
-    //             }
-
-    //             toast.success("Producto eliminado con éxito");
-    //             router.refresh();
-    //         } catch (error) {
-    //             toast.error("Ocurrió un error al intentar eliminar el producto.");
-    //         } finally {
-    //             setOpen(false);
-    //         }
-    //     });
-    // };
+            toast.success(res.data.success || "Estado actualizado correctamente");
+            router.refresh();
+        } catch (error) {
+            console.error("[TOGGLE_STATUS_ERROR]", error);
+            toast.error("Hubo un error al actualizar el estado.");
+        } finally {
+            setIsLoadingToggle(false);
+        }
+    };
 
     return (
         <>
-            {/* <ConfirmModal
-                isOpen={open}
-                onClose={() => setOpen(false)}
-                onConfirm={onDelete}
-                loading={isPending}
-                title="¿Eliminar producto?"
-                description="Al eliminar este producto, se marcará como no disponible para compra, afectando así el estado de las órdenes, considera archivarlo si no deseas eliminarlo permanentemente."
-            /> */}
             <DropdownMenu>
-                <DropdownMenuTrigger
-                    render={<Button variant="ghost" className="h-8 w-8 p-0" />}
-                >
+                <DropdownMenuTrigger render={<Button variant="ghost" className="h-8 w-8 p-0" disabled={isLoadingToggle}>
                     <span className="sr-only">Open menu</span>
                     <MoreHorizontal className="h-4 w-4" />
+                </Button>}>
+
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     <DropdownMenuGroup>
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => onCopy(product.id)}
-                        >
+
+                        <DropdownMenuItem onClick={() => onCopy(product.id)}>
                             <Copy className="mr-2 h-4 w-4" />
-                            Copy ID
+                            Copiar ID
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                            onClick={() => router.push(`/products/${product.id}`)}
-                        >
+
+                        <DropdownMenuItem onClick={() => router.push(`/products/${product.id}`)}>
                             <Pencil className="mr-2 h-4 w-4" />
-                            Update
+                            Actualizar
                         </DropdownMenuItem>
+
+                        <DropdownMenuSeparator />
+                        {/* Opciones rápidas para alternar booleanos */}
                         <DropdownMenuItem
-                            onClick={() => setOpen(true)}
+                            onClick={() => handleToggleStatus("isFeatured", !!product.isFeatured)}
+                            disabled={isLoadingToggle}
                         >
-                            <Trash className="mr-2 h-4 w-4" />
-                            {isPending ? "Deleting..." : "Delete"}
+                            <Star className="mr-2 h-4 w-4" />
+                            {product.isFeatured ? "Quitar de destacados" : "Marcar como destacado"}
                         </DropdownMenuItem>
+
+                        <DropdownMenuItem
+                            onClick={() => handleToggleStatus("isArchived", !!product.isArchived)}
+                            disabled={isLoadingToggle}
+                        >
+                            <CardIcon archived={!!product.isArchived} />
+                            {product.isArchived ? "Desarchivar producto" : "Archivar producto"}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
                     </DropdownMenuGroup>
                 </DropdownMenuContent>
             </DropdownMenu>
         </>
     )
 }
+
+// Icono auxiliar para archivo
+const CardIcon = ({ archived }: { archived: boolean }) => {
+    return <Archive className="mr-2 h-4 w-4" />;
+};
 
 export default CellActions;
