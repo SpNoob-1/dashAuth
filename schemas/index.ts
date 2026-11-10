@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { roleEnum } from "@/db/schema";
+import { title } from "process";
 
 
 export const SettingsSchema = z.object({
@@ -271,6 +272,51 @@ export const sizeSchema = z.object({
         }),
 });
 
+// SECTIONS
+
+export const sectionSchema = z.object({
+    key: z
+        .string()
+        .trim()
+        .min(1, { message: "La clave es obligatoria" })
+        .refine((val) => val.trim().length > 0, {
+            message: "La clave no puede contener únicamente espacios en blanco.",
+        }),
+
+    title: z
+        .string()
+        .trim()
+        .min(1, { message: "El título es obligatorio." })
+        .max(30, { message: "El título no puede exceder los 30 caracteres." })
+        .refine((val) => val.trim().length > 0, {
+            message: "El título no puede contener únicamente espacios en blanco.",
+        }),
+
+    subtitle: z
+        .string()
+        .trim()
+        .min(1, { message: "El subtítulo es obligatorio." })
+        .max(250, { message: "El subtítulo no puede exceder los 250 caracteres." })
+        .refine((val) => val.trim().length > 0, {
+            message: "El subtítulo no puede contener únicamente espacios en blanco.",
+        }),
+});
+
+export const sectionSchemaIsactive = z.object({
+    isActive: z.boolean().default(false).optional(),
+})
+
+export const sectionSchemaReorden = z.object({
+    items: z.array(
+        z.object({
+            id: z.string().uuid(),
+            order: z.number().int(),
+        })
+    ),
+});
+
+// SECTION 
+export type sectionSchemaType = z.infer<typeof sectionSchema>
 
 // SIZES
 export type sizeSchemaType = z.infer<typeof sizeSchema>;

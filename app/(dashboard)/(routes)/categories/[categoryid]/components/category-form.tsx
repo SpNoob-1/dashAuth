@@ -106,7 +106,7 @@ const CategoryForm = ({ initialData, billboards }: CategoryFormProps) => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
                 <FieldGroup>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {/* Campo Nombre de Categoría */}
+                        {/* Seccion de Categoría */}
                         <Controller
                             name="name"
                             control={form.control}
@@ -128,7 +128,7 @@ const CategoryForm = ({ initialData, billboards }: CategoryFormProps) => {
                             )}
                         />
 
-                        {/* Selector de Billboards */}
+                        {/* Seccion de Billboards */}
                         <Controller
                             name="billboardId"
                             control={form.control}

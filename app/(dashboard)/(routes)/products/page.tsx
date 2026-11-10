@@ -1,7 +1,7 @@
 import { db } from "@/index";
 import { products, categories, sizes } from "@/db/schema";
 import ProductClient from "./components/main-client";
-import { desc, eq } from "drizzle-orm";
+import { asc, desc, eq } from "drizzle-orm";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { formatCurrency } from "@/lib/utils";
@@ -13,7 +13,7 @@ const ProductsPage = async () => {
         .from(products)
         .leftJoin(categories, eq(products.categoryId, categories.id))
         .leftJoin(sizes, eq(products.sizeId, sizes.id))
-        .orderBy(desc(products.order));
+        .orderBy(asc(products.order));
 
     const formattedProducts = productsList.map((item) => ({
         id: item.products.id,

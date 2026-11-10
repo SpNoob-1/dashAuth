@@ -94,7 +94,7 @@ const SizeForm = ({ initialData }: SizeFormProps) => {
                             control={form.control}
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="name">Name</FieldLabel>
+                                    <FieldLabel htmlFor="name">Nombre</FieldLabel>
                                     <Input
                                         {...field}
                                         id="name"
@@ -114,7 +114,7 @@ const SizeForm = ({ initialData }: SizeFormProps) => {
                             control={form.control}
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="value">Value</FieldLabel>
+                                    <FieldLabel htmlFor="value">Valor</FieldLabel>
                                     <Input
                                         {...field}
                                         id="value"

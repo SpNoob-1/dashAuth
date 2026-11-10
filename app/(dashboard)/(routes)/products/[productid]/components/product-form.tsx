@@ -61,10 +61,10 @@ const ProductForm = ({ initialData, categories, sizes }: ProductFormProps) => {
         }
     });
 
-    const title = initialData ? "Edit Product" : "Create Product";
-    const description = initialData ? "Edit product" : "Create product";
-    const toastMessage = initialData ? "Product updated successfully" : "Product created successfully";
-    const action = initialData ? "Save Changes" : "Create";
+    const title = initialData ? "Editar Productos" : "Crear Productos";
+    const description = initialData ? "Editar productos" : "Crear productos";
+    const toastMessage = initialData ? "Producto actualizado correctamente" : "Producto creado correctamente";
+    const action = initialData ? "Guardar cambios" : "Crear";
 
     const onSubmit = async (data: productSchemaUpdateType) => {
 
@@ -105,17 +105,7 @@ const ProductForm = ({ initialData, categories, sizes }: ProductFormProps) => {
         <div className="space-y-4 w-full">
             <div className="flex items-center justify-between w-full">
                 <Heading Title={title} Description={description} />
-                {initialData && (
-                    <Button
-                        variant="destructive"
-                        size="icon"
-                        onClick={() => setOpen(true)}
-                        disabled={isPending}
-                        type="button"
-                    >
-                        <Trash className="h-4 w-4" />
-                    </Button>
-                )}
+
             </div>
             <Separator className="my-4 w-full" />
 
@@ -160,11 +150,11 @@ const ProductForm = ({ initialData, categories, sizes }: ProductFormProps) => {
                             control={form.control}
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="product-name">Name</FieldLabel>
+                                    <FieldLabel htmlFor="product-name">Nombre</FieldLabel>
                                     <Input
                                         {...field}
                                         id="product-name"
-                                        placeholder="Product name"
+                                        placeholder="Nombre del Producto"
                                         disabled={isPending}
                                         aria-invalid={fieldState.invalid}
                                         autoComplete="off"
@@ -182,11 +172,11 @@ const ProductForm = ({ initialData, categories, sizes }: ProductFormProps) => {
                             control={form.control}
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="product-price">Price</FieldLabel>
+                                    <FieldLabel htmlFor="product-price">Precio</FieldLabel>
                                     <Input
                                         {...field}
                                         id="product-price"
-                                        placeholder="Product price"
+                                        placeholder="Precio del Producto "
                                         disabled={isPending}
                                         aria-invalid={fieldState.invalid}
                                         autoComplete="off"
@@ -278,7 +268,7 @@ const ProductForm = ({ initialData, categories, sizes }: ProductFormProps) => {
                 </FieldGroup>
 
                 <Button type="submit" disabled={isPending}>
-                    {isPending ? "Saving..." : action}
+                    {isPending ? "Guardar..." : action}
                 </Button>
             </form>
             <Separator />

@@ -7,12 +7,15 @@ import { DataTableFeatures } from "@/components/ui/data-table-features"
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown } from "lucide-react"
 import CellActionsCategory from "../../components/cell-actions"
+import { CellOrden } from "../../components/cell-orden"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type CategoryColumns = {
     id: string
     name: string
+    order: number
+    isFeatured: boolean
     billboardLabel: string;
     createdAt: string
 }
@@ -20,7 +23,10 @@ export type CategoryColumns = {
 // Use `accessor` for data columns and `display` for columns without one.
 const columnHelper = createColumnHelper<DataTableFeatures, CategoryColumns>()
 
-export const columns = columnHelper.columns([
+export const Columns = (
+    onMove: (index: number, direction: "up" | "down") => void,
+    isLoading: boolean
+) => columnHelper.columns([
 
     columnHelper.accessor("name", {
         header: ({ column }) => {
@@ -29,7 +35,7 @@ export const columns = columnHelper.columns([
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Name
+                    Nombre
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
@@ -41,17 +47,33 @@ export const columns = columnHelper.columns([
             return row.original.billboardLabel
         }
     }),
+    columnHelper.accessor("isFeatured", {
+        header: "¿Destacado?",
+    }),
     columnHelper.accessor("createdAt", {
         header: "Created At",
     }),
     columnHelper.display({
         id: "actions",
-        header: "Actions",
+        header: "Actiones",
         cell: ({ row }) => {
             const category = row.original
             return (
-                <CellActionsCategory data={category} />
+                <CellActionsCategory category={category} />
             )
         }
-    })
+    }),
+    columnHelper.display({
+        id: "orden",
+        header: "Orden",
+        cell: ({ row }) => {
+            return (
+                <CellOrden
+                    category={row.original}
+                    index={row.index}
+                    onMove={onMove}
+                    disabled={isLoading} />
+            )
+        }
+    }),
 ])

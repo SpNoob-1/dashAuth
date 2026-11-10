@@ -59,14 +59,14 @@ const CellActions = ({ product }: CellActionsProps) => {
         <>
             <DropdownMenu>
                 <DropdownMenuTrigger render={<Button variant="ghost" className="h-8 w-8 p-0" disabled={isLoadingToggle}>
-                    <span className="sr-only">Open menu</span>
+                    <span className="sr-only">Abrir menu</span>
                     <MoreHorizontal className="h-4 w-4" />
                 </Button>}>
 
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     <DropdownMenuGroup>
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuLabel>Actiones</DropdownMenuLabel>
 
                         <DropdownMenuItem onClick={() => onCopy(product.id)}>
                             <Copy className="mr-2 h-4 w-4" />

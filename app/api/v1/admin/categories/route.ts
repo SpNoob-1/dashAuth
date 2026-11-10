@@ -34,7 +34,7 @@ export async function POST(req: Request) {
             .insert(categories)
             .values({
                 name: validation.data.name,
-                billboardId: validation.data.billboardId,
+                billboardId: validation.data.billboardid,
             })
             .returning();
 

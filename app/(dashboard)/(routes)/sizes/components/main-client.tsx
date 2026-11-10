@@ -26,7 +26,7 @@ const SizesClient = ({ data }: SizesClientProps) => {
             <div className="flex items-center justify-between w-full">
                 <Heading
                     Title={`Sizes (${data.length})`}
-                    Description="Manage your store's sizes"
+                    Description="Administra los tamaños de tu tienda"
                 />
 
                 <Button
@@ -35,7 +35,7 @@ const SizesClient = ({ data }: SizesClientProps) => {
                     size={"lg"}
                 >
                     <Plus className="mr-2 h-4 w-4" />
-                    Agregar un tamano
+                    Agregar un tamaño
                 </Button>
             </div>
             <Separator className="my-4 w-full" />

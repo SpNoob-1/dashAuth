@@ -41,7 +41,7 @@ export const columns = columnHelper.columns([
     }),
     columnHelper.display({
         id: "actions",
-        header: "Actions",
+        header: "Actiones",
         cell: ({ row }) => {
             const size = row.original
             return (

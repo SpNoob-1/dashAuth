@@ -3,7 +3,7 @@
 import { db } from "@/index";
 import { categories, billboards } from "@/db/schema";
 import CategoriesClient from "./components/main-client";
-import { desc, eq } from "drizzle-orm";
+import { asc, desc, eq } from "drizzle-orm";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -16,11 +16,13 @@ const CategoriesPage = async () => {
         })
         .from(categories)
         .leftJoin(billboards, eq(categories.billboardId, billboards.id))
-        .orderBy(desc(categories.order));
+        .orderBy(asc(categories.order));
 
     const formattedCategories = categoriesList.map((item) => ({
         id: item.category.id,
         name: item.category.name,
+        order: item.category.order,
+        isFeatured: item.category.isFeatured,
         billboardLabel: item.billboard?.label || "No billboard",
         createdAt: format(item.category.createdAt, "dd 'de' MMMM 'de' yyyy", { locale: es }),
     }));

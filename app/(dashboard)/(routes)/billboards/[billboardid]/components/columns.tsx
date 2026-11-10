@@ -37,7 +37,7 @@ export const columns = columnHelper.columns([
     }),
     columnHelper.display({
         id: "actions",
-        header: "Actions",
+        header: "Actiones",
         cell: ({ row }) => {
             const billboard = row.original
             return (
