@@ -39,16 +39,14 @@ export async function PATCH(
             return NextResponse.json({ error: "Product ID es requerido" }, { status: 400 });
         }
 
-        const { name, price, categoryId, sizeId, images: productImages } = validation.data;
+        const { name, price, description, categoryId, sizeId, images: productImages } = validation.data;
 
-
-
-        // 1. Actualización del producto principal (¡AGREGADO EL WHERE AQUÍ!)
         await db
             .update(products)
             .set({
                 name,
                 price: price?.toString(),
+                description,
                 categoryId,
                 sizeId,
                 updatedAt: new Date(),

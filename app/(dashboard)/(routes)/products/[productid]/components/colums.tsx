@@ -13,6 +13,7 @@ export type ProductColumns = {
     id: string
     name: string
     price: string
+    description: string
     category: string
     size: string
     order: number

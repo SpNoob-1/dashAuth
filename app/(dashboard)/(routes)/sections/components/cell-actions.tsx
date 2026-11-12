@@ -48,6 +48,7 @@ const CellActionsSection = ({ section }: CellActionsProps) => {
             });
 
             toast.success(res.data.success || "Estado actualizado correctamente");
+            router.push("/sections")
             router.refresh();
         } catch (error) {
             console.error("[TOGGLE_STATUS_ERROR]", error);

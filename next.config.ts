@@ -6,7 +6,12 @@ const nextConfig: NextConfig = {
             {
                 protocol: "https",
                 hostname: "res.cloudinary.com",
-                pathname: "/**", // Permite cualquier ruta dentro del dominio
+                pathname: "/**",
+            },
+            {
+                protocol: "https",
+                hostname: "external-content.duckduckgo.com",
+                pathname: "/**",
             },
         ],
     },

@@ -163,6 +163,14 @@ export const productSchema = z.object({
             })
         )
         .min(1, { message: "Debes subir al menos una imagen para el producto." }),
+    description: z
+        .string()
+        .trim()
+        .min(1, { message: "La descripccion es obligatoria." })
+        .max(400, { message: "La descripccion no puede exceder los 400 caracteres." })
+        .refine((val) => val.trim().length > 0, {
+            message: "La descripccion no puede contener únicamente espacios en blanco.",
+        }),
 
     price: z.coerce
         .number({ message: "El precio debe ser un número válido." })

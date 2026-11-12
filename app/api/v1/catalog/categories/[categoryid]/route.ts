@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { eq, and } from "drizzle-orm";
 import { db } from "@/index";
 import { categories } from "@/db/schema";
+import { corsHeaders } from "@/lib/cors";
 
 export async function GET(
     req: Request,
@@ -24,7 +25,7 @@ export async function GET(
             },
         });
 
-        return NextResponse.json(category);
+        return NextResponse.json(category, { headers: corsHeaders });
     } catch (error) {
         console.error("[CATEGORY_GET_ERROR]", error);
         return new NextResponse("Internal Error", { status: 500 });

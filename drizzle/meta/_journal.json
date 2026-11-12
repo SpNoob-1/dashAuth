@@ -22,6 +22,20 @@
       "when": 1793894631648,
       "tag": "0002_freezing_odin",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794409818868,
+      "tag": "0003_remarkable_lockjaw",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794410059780,
+      "tag": "0004_curly_menace",
+      "breakpoints": true
     }
   ]
 }

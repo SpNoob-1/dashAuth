@@ -30,14 +30,15 @@ export async function POST(req: Request) {
             );
         }
 
-        const { name, price, categoryId, sizeId, images: productImages } = validation.data;
+        const { name, price, categoryId, description, sizeId, images: productImages } = validation.data;
 
         // 1. Inserción del producto principal
         const [newProduct] = await db
             .insert(products)
             .values({
                 name,
-                price: price.toString(), // PostgreSQL decimal espera string
+                price: price.toString(),
+                description,
                 categoryId,
                 sizeId,
             })
@@ -53,7 +54,7 @@ export async function POST(req: Request) {
             );
         }
 
-        revalidatePath(`/products`);
+        revalidatePath(`/sections`);
 
 
         return NextResponse.json(

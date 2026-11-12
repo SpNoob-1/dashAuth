@@ -147,6 +147,7 @@ export const products = pgTable("products", {
     sizeId: uuid("size_id")
         .references(() => sizes.id, { onDelete: "restrict" }),
     price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+    description: text("description").default("No Description"),
     order: integer("order").notNull().default(10),
     isFeatured: boolean("is_featured").default(false).notNull(),
     isArchived: boolean("is_archived").default(false).notNull(),

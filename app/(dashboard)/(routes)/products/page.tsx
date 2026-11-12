@@ -18,6 +18,7 @@ const ProductsPage = async () => {
     const formattedProducts = productsList.map((item) => ({
         id: item.products.id,
         name: item.products.name,
+        description: item.products.description ?? "",
         price: formatCurrency(Number(item.products.price)),
         isArchived: item.products.isArchived,
         isFeatured: item.products.isFeatured,

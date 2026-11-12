@@ -21,7 +21,7 @@ export async function GET(
             where: and(
                 categoryId ? eq(products.categoryId, categoryId) : undefined,
                 sizeId ? eq(products.sizeId, sizeId) : undefined,
-                isFeatured ? eq(products.isFeatured, true) : undefined,
+                eq(products.isFeatured, true),
                 eq(products.isArchived, false) // Excluir productos archivados de la tienda pública
             ),
             with: {
@@ -34,6 +34,9 @@ export async function GET(
 
         const categoryList = await db.query.categories.findMany({
             where: eq(categories.isFeatured, true),
+            with: {
+                billboard: true,
+            },
             orderBy: (categories, { asc }) => [asc(categories.order)]
         })
 

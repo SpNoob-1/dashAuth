@@ -48,6 +48,7 @@ const ProductForm = ({ initialData, categories, sizes }: ProductFormProps) => {
         resolver: zodResolver(productSchemaUpdate) as any,
         defaultValues: initialData ? {
             name: initialData.name,
+            description: initialData.description || "",
             price: Number(initialData.price) || 0,
             images: initialData.images?.map((img) => ({ url: img.url })) || [],
             categoryId: initialData.categoryId || "",
@@ -257,6 +258,27 @@ const ProductForm = ({ initialData, categories, sizes }: ProductFormProps) => {
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
+                                    {fieldState.invalid && (
+                                        <FieldError errors={[fieldState.error]} />
+                                    )}
+                                </Field>
+                            )}
+                        />
+
+                        <Controller
+                            name="description"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                                <Field data-invalid={fieldState.invalid}>
+                                    <FieldLabel htmlFor="product-description">Descriptions</FieldLabel>
+                                    <Input
+                                        {...field}
+                                        id="product-description"
+                                        placeholder="Descripccion del Producto"
+                                        disabled={isPending}
+                                        aria-invalid={fieldState.invalid}
+                                        autoComplete="off"
+                                    />
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
                                     )}
