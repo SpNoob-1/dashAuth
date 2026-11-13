@@ -1,6 +1,5 @@
 import * as z from "zod";
 import { roleEnum } from "@/db/schema";
-import { title } from "process";
 
 
 export const SettingsSchema = z.object({
@@ -317,11 +316,48 @@ export const sectionSchemaIsactive = z.object({
 export const sectionSchemaReorden = z.object({
     items: z.array(
         z.object({
-            id: z.string().uuid(),
+            id: z.string(),
             order: z.number().int(),
         })
     ),
 });
+
+// ADDRESSES 
+
+export const addressSchema = z.object({
+    alias: z
+        .string()
+        .trim()
+        .min(1, { message: "El alias es obligatorio." })
+        .max(100, { message: "El alias no puede exceder los 100 caracteres." })
+        .refine((val) => val.trim().length > 0, {
+            message: "El alias no puede contener únicamente espacios en blanco.",
+        }),
+    details: z
+        .string()
+        .trim()
+        .max(400, { message: "La informacion no puede exceder los 400 caracteres." })
+        .refine((val) => val.trim().length > 0, {
+            message: "La informacion no puede contener únicamente espacios en blanco.",
+        }),
+
+    street: z
+        .string()
+        .trim()
+        .min(1, { message: "La direccion es obligatoria." })
+        .max(255, { message: "La direccion no puede exceder los 255 caracteres." })
+        .refine((val) => val.trim().length > 0, {
+            message: "La dirrecion no puede contener únicamente espacios en blanco.",
+        }),
+    isDefault: z.boolean().default(true).optional(),
+    municipioId: z
+        .string({ message: "Debes seleccionar un municipio." })
+        .trim()
+        .min(1, { message: "El municipio es requerido." })
+})
+
+// ADDRESSES
+export type addressSchemaType = z.infer<typeof addressSchema>
 
 // SECTION 
 export type sectionSchemaType = z.infer<typeof sectionSchema>

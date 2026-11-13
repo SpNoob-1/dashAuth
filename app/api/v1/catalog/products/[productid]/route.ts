@@ -1,3 +1,5 @@
+// app/api/v1/catalog/products/[productid]/route.ts
+
 import { NextResponse } from "next/server";
 import { eq, and } from "drizzle-orm";
 import { db } from "@/index";

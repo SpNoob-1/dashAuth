@@ -4,6 +4,8 @@ import { db } from "@/index";
 import { products } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth";
 import { productSchemaReorden } from "@/schemas";
+import { revalidatePath } from "next/cache";
+
 
 export async function PUT(req: Request) {
     try {
@@ -42,6 +44,9 @@ export async function PUT(req: Request) {
                     .where(eq(products.id, item.id));
             }
         });
+
+
+        revalidatePath("/products")
 
         return NextResponse.json(
             { success: "Productos reordenados correctamente." },

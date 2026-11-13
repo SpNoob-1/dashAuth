@@ -6,6 +6,7 @@ import { db } from "@/index";
 import { landingSecciones } from "@/db/schema";
 import { sectionSchemaIsactive } from "@/schemas";
 import { getCurrentUser } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 export async function PATCH(
     req: Request,
@@ -55,6 +56,8 @@ export async function PATCH(
                 .set(valuesToUpdate)
                 .where(eq(landingSecciones.id, sectionid));
         }
+
+        revalidatePath("/sections")
 
         return NextResponse.json(
             { success: "Section actualizada correctamente." },

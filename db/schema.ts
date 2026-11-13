@@ -79,6 +79,7 @@ export const municipios = pgTable("municipios", {
 // DIRECCIONES //
 export const addresses = pgTable("addresses", {
     id: uuid("id").primaryKey().defaultRandom(),
+    alias: varchar("alias", { length: 100 }).notNull(),
     userId: uuid("user_id")
         .notNull()
         .references(() => users.id, { onDelete: "cascade" }),
@@ -201,7 +202,9 @@ export const orders = pgTable("orders", {
         .references(() => ordersStates.id, { onDelete: "restrict" }),
     isPaid: boolean("is_paid").default(false).notNull(),
     phone: varchar("phone", { length: 50 }).default("").notNull(),
-    address: varchar("address", { length: 255 }).default("").notNull(),
+    addressAlias: varchar("address_alias", { length: 100 }).notNull(),
+    addressStreet: varchar("address_street", { length: 255 }).notNull(),
+    addressDetails: text("address_details"),
     municipioName: varchar("municipio_name", { length: 255 }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
         .notNull()
@@ -223,10 +226,8 @@ export const orderItems = pgTable("order_items", {
     productId: uuid("product_id")
         .notNull()
         .references(() => products.id, { onDelete: "restrict" }),
-    productName: varchar("product_name", { length: 255 }).notNull(),
-    unitPrice: decimal("unit_price", { precision: 10, scale: 2 }).notNull(),
-    sizeName: varchar("size_name", { length: 255 }),
     quantity: integer("quantity").notNull().default(1),
+    price: decimal("price", { precision: 10, scale: 2 }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
         .notNull()
         .defaultNow(),
@@ -238,10 +239,7 @@ export const exclusionsDetail = pgTable("exclusions_detail", {
     orderItemId: uuid("order_item_id")
         .notNull()
         .references(() => orderItems.id, { onDelete: "cascade" }),
-    productId: uuid("product_id")
-        .notNull()
-        .references(() => products.id, { onDelete: "restrict" }),
-    reason: text("reason"),
+    reason: text("reason").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -342,9 +340,5 @@ export const exclusionsDetail_Relations = relations(exclusionsDetail, ({ one }) 
     orderItem: one(orderItems, {
         fields: [exclusionsDetail.orderItemId],
         references: [orderItems.id],
-    }),
-    product: one(products, {
-        fields: [exclusionsDetail.productId],
-        references: [products.id],
     }),
 }));

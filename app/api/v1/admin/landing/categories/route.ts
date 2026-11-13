@@ -4,6 +4,7 @@ import { db } from "@/index";
 import { categories } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth";
 import { categoryctSchemaReorden } from "@/schemas";
+import { revalidatePath } from "next/cache";
 
 export async function PUT(req: Request) {
     try {
@@ -41,6 +42,8 @@ export async function PUT(req: Request) {
                     .where(eq(categories.id, item.id));
             }
         });
+
+        revalidatePath("/categories")
 
         return NextResponse.json(
             { success: "Categoría reordenada correctamente." },

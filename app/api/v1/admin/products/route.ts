@@ -54,8 +54,7 @@ export async function POST(req: Request) {
             );
         }
 
-        revalidatePath(`/sections`);
-
+        revalidatePath(`/products`);
 
         return NextResponse.json(
             { success: "Producto creado correctamente.", data: newProduct },

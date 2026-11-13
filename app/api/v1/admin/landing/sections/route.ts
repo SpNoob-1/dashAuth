@@ -4,6 +4,7 @@ import { db } from "@/index";
 import { landingSecciones } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth";
 import { sectionSchemaReorden } from "@/schemas";
+import { revalidatePath } from "next/cache";
 
 export async function PUT(req: Request) {
     try {
@@ -42,6 +43,7 @@ export async function PUT(req: Request) {
             }
         });
 
+        revalidatePath("/sections")
         return NextResponse.json(
             { success: "Section reordenada correctamente." },
             { status: 200 }

@@ -6,6 +6,7 @@ import { db } from "@/index";
 import { products } from "@/db/schema";
 import { productSchemaIsLanding } from "@/schemas";
 import { getCurrentUser } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 export async function PATCH(
     req: Request,
@@ -61,6 +62,8 @@ export async function PATCH(
                 .where(eq(products.id, productid));
         }
 
+
+        revalidatePath("/products")
         return NextResponse.json(
             { success: "Producto actualizado correctamente." },
             { status: 200 }

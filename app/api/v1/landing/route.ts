@@ -29,7 +29,7 @@ export async function GET(
                 category: true,
                 size: true,
             },
-            orderBy: (products, { desc }) => [desc(products.order)],
+            orderBy: (products, { asc }) => [asc(products.order)],
         });
 
         const categoryList = await db.query.categories.findMany({

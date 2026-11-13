@@ -6,6 +6,7 @@ import { db } from "@/index";
 import { categories } from "@/db/schema";
 import { categorySchemaIsLanding } from "@/schemas";
 import { getCurrentUser } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 export async function PATCH(
     req: Request,
@@ -55,6 +56,8 @@ export async function PATCH(
                 .set(valuesToUpdate)
                 .where(eq(categories.id, categoryid));
         }
+
+        revalidatePath("/categories")
 
         return NextResponse.json(
             { success: "Category actualizado correctamente." },
