@@ -1,8 +1,8 @@
 import { db } from "@/index";
 import { users } from "@/db/schema";
-import { eq } from "drizzle-orm"; // <-- Necesario para el filtro WHERE
+import { eq } from "drizzle-orm";
 import { NextResponse, NextRequest } from "next/server";
-import { verifyToken } from "@/lib/auth"; // Asegúrate de importar tu función para verificar el JWT
+import { verifyToken } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
     try {

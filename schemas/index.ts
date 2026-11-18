@@ -356,6 +356,15 @@ export const addressSchema = z.object({
         .min(1, { message: "El municipio es requerido." })
 })
 
+// ORDER-STATE
+
+export const orderStateSchema = z.object({
+    estadoPedidoId: z
+        .string()
+        .trim(),
+})
+
+
 // ADDRESSES
 export type addressSchemaType = z.infer<typeof addressSchema>
 

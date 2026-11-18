@@ -23,7 +23,7 @@ export function MainBar({ className, ...props }: React.HTMLAttributes<HTMLElemen
 
         {
             href: `/categories`,
-            label: "Categories",
+            label: "Categorias",
             active: pathname === `/categories`,
         },
 
@@ -38,6 +38,13 @@ export function MainBar({ className, ...props }: React.HTMLAttributes<HTMLElemen
             label: "Secciones",
             active: pathname === `/sections`,
         },
+
+        {
+            href: `/orders`,
+            label: "Pedidos",
+            active: pathname === `/orders`,
+        },
+
 
     ]
 

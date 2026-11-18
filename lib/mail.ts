@@ -123,13 +123,13 @@ export async function sendOrderConfirmationEmail(email: string, orderData: Order
 
   const content = `
         <h2 style="color: #0f172a; margin-top: 0;">¡Hemos recibido tu pedido! 📦</h2>
-        <p>Gracias por tu compra. Tu pedido con ID <strong>#${orderData.orderId.slice(0, 8)}</strong> ha sido registrado correctamente y se encuentra en procesamiento.</p>
+        <p>Gracias por tu compra. Tu pedido con ID <strong>#${orderData.orderId.slice(0, 8)}</strong> ha sido registrado correctamente y se encuentra en proceso.</p>
         
         <h3 style="color: #0f172a; margin-top: 20px;">Resumen de la compra:</h3>
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;">
             ${itemsList}
             <tr>
-                <td style="padding: 12px 0; font-weight: bold; font-size: 16px;">Total Pagado:</td>
+                <td style="padding: 12px 0; font-weight: bold; font-size: 16px;">Precio Total:</td>
                 <td style="padding: 12px 0; font-weight: bold; font-size: 16px; text-align: right; color: #16a34a;">Q${Number(orderData.total).toFixed(2)}</td>
             </tr>
         </table>
@@ -138,6 +138,9 @@ export async function sendOrderConfirmationEmail(email: string, orderData: Order
         <p style="margin: 0; background-color: #f1f5f9; padding: 12px; border-radius: 6px;">
             ${orderData.addressStreet}, ${orderData.municipioName}
         </p>
+        <a href="${""}" style="background: #000; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">
+            Confirmar Pedido
+          </a>
     `;
 
   return await resend.emails.send({
@@ -149,20 +152,28 @@ export async function sendOrderConfirmationEmail(email: string, orderData: Order
 }
 
 // 3. Correo de Notificación "Pedido Listo" (Transición EN_PREPARACION -> LISTO)
-export async function sendOrderReadyEmail(email: string, orderId: string, customerName: string) {
+interface OrderReadyEmailData {
+  orderId: string;
+  addressStreet: string;
+  municipioName: string;
+}
+
+export async function sendOrderReadyEmail(email: string, orderData: OrderReadyEmailData) {
   const content = `
-        <h2 style="color: #0f172a; margin-top: 0;">¡Tu pedido está listo! 🚀</h2>
-        <p>Hola, <strong>${customerName}</strong>.</p>
-        <p>Nos alegra informarte que tu pedido <strong>#${orderId.slice(0, 8)}</strong> ha sido preparado exitosamente y ya está listo para ser enviado o retirado según tus opciones de entrega.</p>
-        <div style="text-align: center; margin: 30px 0;">
-            <a href="${defaultDomain}/pedidos/${orderId}" style="background-color: #16a34a; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">Ver Estado del Pedido</a>
-        </div>
-    `;
+      <h2 style="color: #0f172a; margin-top: 0;">¡Tu pedido está listo! 🎂✨</h2>
+      <p>Buenas noticias: tu pedido <strong>#${orderData.orderId.slice(0, 8)}</strong> ya terminó de prepararse y está listo para su entrega.</p>
+      
+      <h3 style="color: #0f172a; margin-top: 20px;">Dirección de Entrega:</h3>
+      <p style="margin: 0; background-color: #f1f5f9; padding: 12px; border-radius: 6px;">
+          ${orderData.addressStreet}, ${orderData.municipioName}
+      </p>
+      <p style="margin-top: 16px; color: #475569;">Pronto nos pondremos en contacto contigo para coordinar la recepción.</p>
+  `;
 
   return await resend.emails.send({
     from: "Tu App <onboarding@resend.dev>",
     to: email,
-    subject: `¡Tu pedido #${orderId.slice(0, 8)} está listo!`,
+    subject: `¡Tu pedido #${orderData.orderId.slice(0, 8)} está LISTO!`,
     html: getBaseTemplate("Pedido Listo", content),
   });
 }

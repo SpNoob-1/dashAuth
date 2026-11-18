@@ -246,6 +246,43 @@ export const exclusionsDetail = pgTable("exclusions_detail", {
 
 // RELACIONES //
 
+export const ordersStates_Relations = relations(ordersStates, ({ many }) => ({
+    orders: many(orders),
+}));
+
+export const orders_Relations = relations(orders, ({ one, many }) => ({
+    user: one(users, {
+        fields: [orders.userId],
+        references: [users.id],
+    }),
+    estadoPedido: one(ordersStates, {
+        fields: [orders.estadoPedidoId],
+        references: [ordersStates.id],
+    }),
+    orderItems: many(orderItems),
+}));
+
+export const orderItems_Relations = relations(orderItems, ({ one, many }) => ({
+    order: one(orders, {
+        fields: [orderItems.orderId],
+        references: [orders.id],
+    }),
+    product: one(products, {
+        fields: [orderItems.productId],
+        references: [products.id],
+    }),
+    exclusiones: many(exclusionsDetail),
+}));
+
+export const exclusionsDetail_Relations = relations(exclusionsDetail, ({ one }) => ({
+    orderItem: one(orderItems, {
+        fields: [exclusionsDetail.orderItemId],
+        references: [orderItems.id],
+    }),
+}));
+
+
+
 export const users_Relations = relations(users, ({ many }) => ({
     addresses: many(addresses),
     orders: many(orders),
@@ -308,37 +345,3 @@ export const images_Relations = relations(images, ({ one }) => ({
     }),
 }));
 
-export const ordersStates_Relations = relations(ordersStates, ({ many }) => ({
-    orders: many(orders),
-}));
-
-export const orders_Relations = relations(orders, ({ one, many }) => ({
-    user: one(users, {
-        fields: [orders.userId],
-        references: [users.id],
-    }),
-    estadoPedido: one(ordersStates, {
-        fields: [orders.estadoPedidoId],
-        references: [ordersStates.id],
-    }),
-    orderItems: many(orderItems),
-}));
-
-export const orderItems_Relations = relations(orderItems, ({ one, many }) => ({
-    order: one(orders, {
-        fields: [orderItems.orderId],
-        references: [orders.id],
-    }),
-    product: one(products, {
-        fields: [orderItems.productId],
-        references: [products.id],
-    }),
-    exclusiones: many(exclusionsDetail),
-}));
-
-export const exclusionsDetail_Relations = relations(exclusionsDetail, ({ one }) => ({
-    orderItem: one(orderItems, {
-        fields: [exclusionsDetail.orderItemId],
-        references: [orderItems.id],
-    }),
-}));
